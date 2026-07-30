@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="You built a game! A recap of what you learned and a roadmap for where to take your Unity skills next — 2D, animation, more C#, and project ideas.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.3: Where to Go Next — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8: Build &amp; Share</a></li>
+            <li aria-current="page">Lesson 8.3: Where to Go Next</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🎓 Lesson 8.3: Where to Go Next</h1>
+                <p class="lead">You did it. You went from never having opened Unity to building and shipping a complete game. This final lesson celebrates that — and points you toward everything you can explore next.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Recognize just how much you've learned</li>
+                        <li>Choose a direction: 2D, animation, deeper C#, or more</li>
+                        <li>Know the best resources and communities</li>
+                        <li>Pick a next project to keep the momentum</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 20 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#did" class="toc-link">Look What You Built</a></li>
+                    <li><a href="#learned" class="toc-link">Everything You Learned</a></li>
+                    <li><a href="#paths" class="toc-link">Directions to Explore</a></li>
+                    <li><a href="#resources" class="toc-link">Best Resources</a></li>
+                    <li><a href="#projects" class="toc-link">Your Next Project</a></li>
+                    <li><a href="#summary" class="toc-link">Farewell</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="did" class="lesson-section">
+                <h2>Look What You Built</h2>
+                <p>Not long ago this screen would have looked like magic. Now you know exactly how every part of it works — you built it:</p>
+                <figure>
+                    <img src="images/level.png" alt="A real Unity render of the completed mini-game: a walled arena with a player and collectible stars.">
+                    <figcaption>Figure 1: Your game (real render). Player, physics, pickups, score, win/lose, polish — all yours.</figcaption>
+                </figure>
+            </section>
+
+            <section id="learned" class="lesson-section">
+                <h2>Everything You Learned</h2>
+                <p>Take a moment to appreciate the full stack of skills you now have:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>You can…</th><th>From</th></tr></thead>
+                        <tbody>
+                            <tr><td>Navigate the Editor and build scenes</td><td>Modules 1–2</td></tr>
+                            <tr><td>Write, run, and debug C# scripts</td><td>Module 3</td></tr>
+                            <tr><td>Control a player and camera with input</td><td>Module 4</td></tr>
+                            <tr><td>Use physics, colliders, triggers, and pickups</td><td>Module 5</td></tr>
+                            <tr><td>Build UI, track score, and add audio</td><td>Module 6</td></tr>
+                            <tr><td>Assemble, polish, and ship a full game</td><td>Modules 7–8</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 These are the real fundamentals.</strong> Almost every Unity tutorial you'll ever watch assumes exactly these skills. You're now ready for the whole world of them.</blockquote>
+            </section>
+
+            <section id="paths" class="lesson-section">
+                <h2>Directions to Explore</h2>
+                <div class="mermaid">
+                    graph TD
+                    Y[You are here:<br/>3D fundamentals ✅] --> A[2D games<br/>sprites, tilemaps]
+                    Y --> B[Animation<br/>Animator, states]
+                    Y --> C[Deeper C#<br/>classes, events, patterns]
+                    Y --> D[Art &amp; assets<br/>importing models, the Asset Store]
+                    Y --> E[Bigger systems<br/>menus, saving, multiple levels]
+                </div>
+                <div class="card card-success">
+                    <h4>✅ Pick one, not all</h4>
+                    <p>You don't need to learn everything at once. Choose whichever excites you most and dive in — the fundamentals you have transfer everywhere.</p>
+                </div>
+            </section>
+
+            <section id="resources" class="lesson-section">
+                <h2>Best Resources</h2>
+                <ul>
+                    <li><a href="https://learn.unity.com/" target="_blank" rel="noopener">Unity Learn</a> — official, free, structured courses and projects.</li>
+                    <li><a href="https://docs.unity3d.com/Manual/index.html" target="_blank" rel="noopener">Unity Manual</a> &amp; <a href="https://docs.unity3d.com/ScriptReference/" target="_blank" rel="noopener">Scripting API</a> — your reference for every component and class.</li>
+                    <li><a href="https://discussions.unity.com/" target="_blank" rel="noopener">Unity Discussions</a> — ask questions and read others'.</li>
+                    <li><a href="https://assetstore.unity.com/" target="_blank" rel="noopener">Unity Asset Store</a> — free and paid art, audio, and tools to speed up projects.</li>
+                    <li>YouTube — search a specific feature ("Unity 6 health bar") and you'll find focused tutorials.</li>
+                </ul>
+                <div class="card card-warning">
+                    <h4>⚠️ Watch the version</h4>
+                    <p>Unity changes over time. When following a tutorial, prefer recent ones (Unity 6 / URP) so menus and code match what you see. Older tutorials still teach concepts, but paths may differ.</p>
+                </div>
+            </section>
+
+            <section id="projects" class="lesson-section">
+                <h2>Your Next Project</h2>
+                <p>The best way to keep learning is to build. Good next steps — each stretches you just a little:</p>
+                <ul>
+                    <li><strong>Extend Star Collector:</strong> add multiple levels, a high score saved between runs, or moving obstacles.</li>
+                    <li><strong>A simple maze game:</strong> reuse movement + collisions with a maze of walls and an exit.</li>
+                    <li><strong>A tiny endless runner:</strong> a player that auto-runs while you dodge — great physics + spawning practice.</li>
+                    <li><strong>Recreate a classic:</strong> Pong or Breakout teaches loads and is very achievable now.</li>
+                </ul>
+                <blockquote><strong>💡 Finish small things.</strong> Three tiny finished games teach you far more than one huge unfinished one. Ship often; each finished project makes the next easier.</blockquote>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Farewell (for now)</h2>
+                <div class="card card-success">
+                    <h3>🎉 Congratulations!</h3>
+                    <ul>
+                        <li>You learned the Editor, GameObjects, C#, input, physics, UI, and audio.</li>
+                        <li>You built, polished, and shipped a complete mini-game.</li>
+                        <li>You have the fundamentals every Unity project builds on.</li>
+                        <li>You know where to go next — so go make something.</li>
+                    </ul>
+                </div>
+                <p>Thank you for working through <strong>Unity Fundamentals</strong>. The gap between "I wish I could make games" and "I made a game" is the hardest one to cross, and you've crossed it. Everything from here is building on a foundation you now own.</p>
+                <p>Now go build the thing you've been imagining. 🚀</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🏆 Course Complete!</h3>
+                    <p>You're a Unity developer now. Keep building, keep shipping, and have fun.</p>
+                    <p style="margin-top:1rem;"><a href="index.html">← Back to the course home</a></p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_28.html" class="prev-lesson">← Previous: Building Your Game</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="index.html" class="next-lesson">Finish: Back to Home →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

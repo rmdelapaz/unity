@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Give your game a finish line: track total stars for a win, add a countdown timer for a lose condition, and show a result panel.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.3: Win &amp; Lose Conditions — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+    <style>
+        .game-shot { position: relative; max-width: 820px; margin: var(--spacing-lg) auto; }
+        .game-shot img { display:block; width:100%; border-radius: 8px; }
+        .winbox { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.55); color:#fff; padding:1.2em 2em; border-radius:14px; text-align:center; font-family:'Segoe UI',system-ui,sans-serif; }
+        .winbox .big { font-size: clamp(1.4rem,5vw,2.6rem); font-weight:800; }
+        .winbox .sub { font-size: clamp(.8rem,2.6vw,1.1rem); opacity:.9; margin-top:.3em; }
+        figcaption.shot-cap { text-align:center; margin-top:.6rem; font-size:.9rem; color:var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7: Mini-Game Project</a></li>
+            <li aria-current="page">Lesson 7.3: Win &amp; Lose Conditions</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🏁 Lesson 7.3: Win &amp; Lose Conditions</h1>
+                <p class="lead">A game needs a finish line. We'll make collecting every star a <strong>win</strong>, add a countdown timer for a <strong>lose</strong>, and show a result panel — turning our sandbox into an actual game with stakes.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Track total stars and detect when all are collected (win)</li>
+                        <li>Add a countdown timer and detect time-out (lose)</li>
+                        <li>Show a win/lose panel and pause the game</li>
+                        <li>Use <code>Time.timeScale</code> to freeze gameplay</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#result" class="toc-link">The Result Screen</a></li>
+                    <li><a href="#win" class="toc-link">Detecting a Win</a></li>
+                    <li><a href="#timer" class="toc-link">A Countdown Timer (Lose)</a></li>
+                    <li><a href="#panel" class="toc-link">Showing the Panel</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="result" class="lesson-section">
+                <h2>The Result Screen</h2>
+                <p>When the player collects the last star, we freeze the game and show a win message like this:</p>
+                <figure class="game-shot">
+                    <img src="images/level.png" alt="A real Unity render of the arena with a 'You Win!' panel overlaid.">
+                    <div class="winbox"><div class="big">🎉 You Win!</div><div class="sub">All 6 stars collected</div></div>
+                    <figcaption class="shot-cap">Figure 1: The win panel over a real render. A lose screen works the same way when the timer hits zero.</figcaption>
+                </figure>
+            </section>
+
+            <section id="win" class="lesson-section">
+                <h2>Detecting a Win</h2>
+                <p>The GameManager needs to know how many stars exist, then compare the score to that total. Add a <code>totalStars</code> and check it in <code>AddPoint()</code>:</p>
+                <pre><code class="language-csharp">public int totalStars = 6;      // set to how many you placed
+
+public void AddPoint()
+{
+    score++;
+    UpdateScoreText();
+
+    if (score >= totalStars)
+    {
+        Win();
+    }
+}</code></pre>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: count automatically</h4>
+                    <p>Instead of typing 6 by hand, count them at start: <code>totalStars = GameObject.FindGameObjectsWithTag("Star").Length;</code> (tag your collectibles "Star" first). Now adding or removing stars just works.</p>
+                </div>
+            </section>
+
+            <section id="timer" class="lesson-section">
+                <h2>A Countdown Timer (Lose)</h2>
+                <p>A ticking clock adds tension. Count down in <code>Update()</code>; if it reaches zero before the win, the player loses:</p>
+                <pre><code class="language-csharp">public float timeLimit = 30f;    // seconds
+public TMP_Text timerText;
+private float timeLeft;
+private bool gameOver = false;
+
+void Start()
+{
+    timeLeft = timeLimit;
+    UpdateScoreText();
+}
+
+void Update()
+{
+    if (gameOver) return;
+
+    timeLeft -= Time.deltaTime;         // count down in real seconds
+    timerText.text = "Time: " + Mathf.CeilToInt(timeLeft);
+
+    if (timeLeft &lt;= 0f)
+    {
+        Lose();
+    }
+}</code></pre>
+                <blockquote><strong>💡 Mathf.CeilToInt</strong> rounds the decimal time up to a whole number, so the timer shows "5, 4, 3…" instead of "4.87, 4.86…".</blockquote>
+            </section>
+
+            <section id="panel" class="lesson-section">
+                <h2>Showing the Panel &amp; Freezing the Game</h2>
+                <p>Both endings show a message and stop the action. Freezing everything is a one-liner: set <code>Time.timeScale = 0</code>, which pauses all time-based movement and physics.</p>
+                <pre><code class="language-csharp">public TMP_Text resultText;    // a big centred text, hidden at start
+
+void Win()
+{
+    gameOver = true;
+    resultText.text = "🎉 You Win!";
+    resultText.gameObject.SetActive(true);
+    Time.timeScale = 0f;       // freeze the game
+}
+
+void Lose()
+{
+    gameOver = true;
+    resultText.text = "⏱ Time's Up!";
+    resultText.gameObject.SetActive(true);
+    Time.timeScale = 0f;
+}</code></pre>
+                <div class="card card-warning">
+                    <h4>⚠️ Remember to reset timeScale</h4>
+                    <p><code>Time.timeScale = 0</code> stays 0 even into a new game. If you add a "Play Again" button that reloads the scene, set <code>Time.timeScale = 1f</code> first, or the new game will start frozen.</p>
+                </div>
+                <div class="mermaid">
+                    graph TD
+                    A[Collect a star] --> B{score &gt;= total?}
+                    B -->|yes| W[Win: show panel, freeze]
+                    C[Timer each frame] --> D{time &lt;= 0?}
+                    D -->|yes| Lo[Lose: show panel, freeze]
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Add a finish line</h3>
+                    <ol>
+                        <li>Add <code>totalStars</code>, a timer, and a hidden centred <strong>resultText</strong> to the GameManager (wire the text slots).</li>
+                        <li>Make collecting the last star trigger <strong>Win</strong>.</li>
+                        <li>Make the timer hitting zero trigger <strong>Lose</strong>.</li>
+                        <li>Play twice: once collecting all stars in time (win), once letting the clock run out (lose).</li>
+                    </ol>
+                    <details>
+                        <summary>💡 The win never triggers</summary>
+                        <p>Check <code>totalStars</code> matches the number of stars actually in the scene (or auto-count them). If you added extra stars, the count is off.</p>
+                    </details>
+                    <details>
+                        <summary>💡 The game starts frozen after replaying</summary>
+                        <p>You left <code>Time.timeScale</code> at 0. Set it back to <code>1f</code> when starting or reloading.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>Time.timeScale = 0f</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It freezes time-based movement and physics — a pause.">A) Freezes the game — time-based movement and physics stop</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not about speed of frames.">B) Makes the game run faster</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't quit.">C) Closes the application</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why subtract <code>Time.deltaTime</code> from the timer each frame?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! deltaTime is seconds per frame, so this counts down in real seconds.">A) It counts down in real seconds, regardless of frame rate</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not a fixed 1 per frame.">B) It always subtracts exactly 1 per frame</button>
+                            <button class="quiz-option" data-correct="false" data-hint="deltaTime isn't random.">C) It adds a random amount</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Win when <code>score &gt;= totalStars</code>; auto-count stars by tag for safety.</li>
+                        <li>Lose when a <code>Time.deltaTime</code> countdown reaches zero.</li>
+                        <li>Show a result text and freeze with <code>Time.timeScale = 0f</code>.</li>
+                        <li>Reset <code>timeScale</code> to 1 when replaying, or the next game starts frozen.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>It's a real game now — win, lose, and all. The final touch is <em>juice</em>: particles, glow, and sound. <strong>Lesson 7.4</strong> adds the polish.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 There's a finish line!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_24.html" class="prev-lesson">← Previous: Building the Level</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_26.html" class="next-lesson">Next: Adding Polish →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

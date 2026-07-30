@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build a polished collectible: a spinning, tagged pickup that disappears when the player touches it — combining everything from Module 5 into a real game object.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.4: Building a Collectible — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5: Physics &amp; Collisions</a></li>
+            <li aria-current="page">Lesson 5.4: Building a Collectible</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⭐ Lesson 5.4: Building a Collectible</h1>
+                <p class="lead">Let's combine everything from this module into one satisfying game object: a collectible that spins to catch the eye, waits patiently, and pops out of existence the moment the player touches it. This is a real piece of your mini-game.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Assemble a collectible from a mesh, a trigger collider, and scripts</li>
+                        <li>Make it spin for visual appeal</li>
+                        <li>Collect it on player touch and turn it into a reusable <strong>prefab</strong></li>
+                        <li>Prepare the hook for scoring (built fully in Module 6)</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                    <p><strong>Project:</strong> A finished, reusable collectible prefab.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#build" class="toc-link">Building the Object</a></li>
+                    <li><a href="#spin" class="toc-link">Making It Spin</a></li>
+                    <li><a href="#collect" class="toc-link">Collecting It</a></li>
+                    <li><a href="#prefab" class="toc-link">Turn It Into a Prefab</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="build" class="lesson-section">
+                <h2>Building the Object</h2>
+                <p>Our collectible will be a small tilted cube — bright, spinning, and pickup-able. Here it is beside the player:</p>
+                <figure>
+                    <img src="images/collectible.png" alt="A real Unity render of a blue capsule player beside a tilted yellow cube collectible on a floor.">
+                    <figcaption>Figure 1: The collectible (yellow) and player (real render). We'll make the cube spin and vanish on contact.</figcaption>
+                </figure>
+                <ol>
+                    <li>Add a <strong>Cube</strong>, scale it to about <code>(0.6, 0.6, 0.6)</code>, and give it a bright material (Lesson 2.3).</li>
+                    <li>Raise it to <strong>Position Y</strong> ≈ 0.8 so it floats just off the floor.</li>
+                    <li>On its <strong>Box Collider</strong>, tick <strong>Is Trigger</strong> (Lesson 5.2).</li>
+                    <li>Rename it <code>Collectible</code>.</li>
+                </ol>
+            </section>
+
+            <section id="spin" class="lesson-section">
+                <h2>Making It Spin</h2>
+                <p>A spinning pickup reads as "grab me!" Reuse the spin idea from Lesson 3.3. Create a <code>Collectible</code> script:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Collectible : MonoBehaviour
+{
+    public float spinSpeed = 90f;   // degrees per second
+
+    void Update()
+    {
+        // gentle spin around Y for visual appeal
+        transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f);
+    }
+}</code></pre>
+            </section>
+
+            <section id="collect" class="lesson-section">
+                <h2>Collecting It</h2>
+                <p>Now add the pickup behaviour to the same script — when the player enters the trigger, collect it. We'll print a message for now and wire real scoring in Module 6:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Collectible : MonoBehaviour
+{
+    public float spinSpeed = 90f;
+
+    void Update()
+    {
+        transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Collected! (score will go here in Module 6)");
+            Destroy(gameObject);   // remove this collectible
+        }
+    }
+}</code></pre>
+                <div class="card card-warning">
+                    <h4>⚠️ The three must-haves</h4>
+                    <p>For the pickup to fire: the <strong>collectible's collider has Is Trigger ON</strong>, the <strong>player has a Rigidbody</strong>, and the <strong>player is tagged "Player"</strong>. Miss one and nothing happens — this is the checklist to run every time.</p>
+                </div>
+            </section>
+
+            <section id="prefab" class="lesson-section">
+                <h2>Turn It Into a Prefab</h2>
+                <p>You'll want <em>many</em> collectibles, so make it a prefab (Lesson 2.4):</p>
+                <ol>
+                    <li>Drag the finished <code>Collectible</code> from the Hierarchy into a <strong>Prefabs</strong> folder.</li>
+                    <li>Drag the prefab back into the scene several times to scatter collectibles around.</li>
+                    <li>Later, tweak the prefab once (e.g. change <code>spinSpeed</code>) and every collectible updates.</li>
+                </ol>
+                <div class="mermaid">
+                    graph TD
+                    A[Collectible object] --> B[Mesh + bright material]
+                    A --> C[Box Collider: Is Trigger ON]
+                    A --> D[Collectible.cs: spin + collect]
+                    A --> E[Saved as Prefab] --> F[Scatter many instances]
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: A field of stars</h3>
+                    <ol>
+                        <li>Build the spinning, collectible cube with the full <code>Collectible</code> script.</li>
+                        <li>Confirm it spins and disappears when the player (tagged, with Rigidbody) touches it.</li>
+                        <li>Make it a prefab and scatter <strong>5–6</strong> around the floor.</li>
+                        <li>Play and collect them all — each vanishes and logs a message.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 It spins but won't collect</summary>
+                        <p>Run the three-must-haves checklist above. Almost always it's a missing Rigidbody on the player or a missing "Player" tag.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Bonus: bob while spinning</summary>
+                        <pre><code class="language-csharp">void Update()
+{
+    transform.Rotate(0f, spinSpeed * Time.deltaTime, 0f);
+    float y = 0.8f + Mathf.Sin(Time.time * 2f) * 0.15f;
+    transform.position = new Vector3(transform.position.x, y, transform.position.z);
+}</code></pre>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Why make the collectible a prefab?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Reuse many, edit once.">A) To reuse many copies and edit them all at once</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Prefabs aren't required to run scripts.">B) Scripts only run on prefabs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Prefabs don't change physics behaviour.">C) It disables gravity</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> The collectible spins but never gets collected. What's the most likely miss?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! No Rigidbody on the player (or missing tag / Is Trigger).">A) The player has no Rigidbody, or isn't tagged Player, or Is Trigger is off</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Spin working means the script runs fine.">B) The spin code is broken</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Colour has nothing to do with it.">C) The material is the wrong colour</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A collectible = mesh + bright material + <strong>trigger</strong> collider + a script.</li>
+                        <li>Spin it in <code>Update</code> for appeal; collect it in <code>OnTriggerEnter</code> with a tag check + <code>Destroy</code>.</li>
+                        <li>Save it as a <strong>prefab</strong> to scatter many and edit them all at once.</li>
+                        <li>The scoring hook is ready — we complete it in Module 6.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Collecting things is satisfying — but players need to <em>see</em> their progress. <strong>Module 6</strong> adds on-screen UI, a live score, and sound.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 5 complete!</h3>
+                    <p>Gravity, colliders, triggers, and a real working collectible. Your game is taking shape.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_18.html" class="prev-lesson">← Previous: Handling Collisions in Code</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_20.html" class="next-lesson">Next: Building a UI Canvas →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

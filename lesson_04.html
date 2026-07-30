@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new scene, add your first objects from the GameObject menu, position them, and save your work — a hands-on first build in Unity 6.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.4: Creating &amp; Saving Your First Scene — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+    <style>
+        .ui-figure { margin: var(--spacing-lg) 0; text-align: center; }
+        .ui-figure svg { width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.28); }
+        .ui-figure figcaption { margin-top: var(--spacing-sm); font-size: 0.9rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1: Meet Unity</a></li>
+            <li aria-current="page">Lesson 1.4: Creating &amp; Saving Your First Scene</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧱 Lesson 1.4: Creating &amp; Saving Your First Scene</h1>
+                <p class="lead">Enough looking around — let's build. In this hands-on lesson you'll create a fresh scene, add a floor and a cube, position them, and save your work. It's small, but it's <em>your</em> first Unity scene.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Create a new, empty scene and understand its default contents</li>
+                        <li>Add objects using the <strong>GameObject</strong> menu (a Plane and a Cube)</li>
+                        <li>Position objects so the cube rests on the floor</li>
+                        <li>Save your scene into the <strong>Scenes</strong> folder and know why saving matters</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                    <p><strong>Project:</strong> Recreate the simple cube-on-a-floor scene shown below — entirely by yourself.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span>
+                    <span class="toc-label">In This Lesson</span>
+                    <span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#goal" class="toc-link">What We're Making</a></li>
+                        <li><a href="#new" class="toc-link">Creating a New Scene</a></li>
+                        <li><a href="#add" class="toc-link">Adding Your First Objects</a></li>
+                        <li><a href="#position" class="toc-link">Positioning the Cube</a></li>
+                        <li><a href="#save" class="toc-link">Saving Your Scene</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Challenge</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <section id="goal" class="lesson-section">
+                <h2>What We're Making</h2>
+                <p>Here's the target — a flat floor with a single cube resting on it. It looks plain, but making it teaches you the core create-position-save loop you'll repeat forever:</p>
+                <figure>
+                    <img src="images/first-scene.png" alt="A real Unity render of a simple first scene: one white cube resting on a flat grey plane under a blue sky.">
+                    <figcaption>Figure 1: Our goal for this lesson — a real render of the simple scene you'll build.</figcaption>
+                </figure>
+            </section>
+
+            <section id="new" class="lesson-section">
+                <h2>Creating a New Scene</h2>
+                <p>A <strong>scene</strong> is a single screen, level, or environment of your game — a container for objects. Let's make a fresh one.</p>
+                <ol>
+                    <li>From the top menu, choose <strong>File ▸ New Scene</strong>.</li>
+                    <li>In the dialog, pick the <strong>Basic (URP)</strong> template and click <strong>Create</strong>.</li>
+                    <li>Look at the <strong>Hierarchy</strong> — a new scene already contains two objects: a <code>Main Camera</code> and a <code>Directional Light</code>.</li>
+                </ol>
+
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Scene:</strong> a saved arrangement of GameObjects — think of it as one level or screen. A game is made of one or more scenes. Scenes are saved as <code>.unity</code> files in your project.</p>
+                </div>
+
+                <blockquote>
+                    <strong>💡 Why a camera and a light already?</strong> Without a <strong>camera</strong> the player would see nothing, and without a <strong>light</strong> everything would be pitch black. Unity gives you both so your scene is visible from the start.
+                </blockquote>
+            </section>
+
+            <section id="add" class="lesson-section">
+                <h2>Adding Your First Objects</h2>
+                <p>Objects are added from the <strong>GameObject</strong> menu at the top (you can also right-click in the Hierarchy). For basic shapes, look under <strong>3D Object</strong>:</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 420 250" role="img" aria-labelledby="menuTitle menuDesc" style="max-width:420px;">
+                        <title id="menuTitle">The GameObject 3D Object menu</title>
+                        <desc id="menuDesc">A recreation of Unity's GameObject menu with the 3D Object submenu open, listing Cube, Sphere, Capsule, Cylinder, Plane and Quad. Plane and Cube are highlighted.</desc>
+                        <rect x="0" y="0" width="420" height="250" rx="6" fill="#3a3a3a" stroke="#161616"/>
+                        <!-- left menu -->
+                        <rect x="8" y="10" width="150" height="26" rx="3" fill="#2c5d87"/>
+                        <text x="18" y="27" font-family="'Segoe UI',sans-serif" font-size="13" fill="#fff">3D Object ▸</text>
+                        <g font-family="'Segoe UI',sans-serif" font-size="13" fill="#c4c4c4">
+                            <text x="18" y="58">Effects ▸</text>
+                            <text x="18" y="82">Light ▸</text>
+                            <text x="18" y="106">Audio ▸</text>
+                            <text x="18" y="130">UI ▸</text>
+                            <text x="18" y="154">Camera</text>
+                        </g>
+                        <!-- submenu -->
+                        <rect x="168" y="6" width="200" height="220" rx="4" fill="#333333" stroke="#161616"/>
+                        <g font-family="'Segoe UI',sans-serif" font-size="13" fill="#d2d2d2">
+                            <rect x="170" y="12" width="196" height="24" fill="#2c5d87"/><text x="182" y="29" fill="#fff">Cube</text>
+                            <text x="182" y="57">Sphere</text>
+                            <text x="182" y="81">Capsule</text>
+                            <text x="182" y="105">Cylinder</text>
+                            <rect x="170" y="116" width="196" height="24" fill="#2c5d87"/><text x="182" y="133" fill="#fff">Plane</text>
+                            <text x="182" y="161">Quad</text>
+                            <text x="182" y="185" fill="#8a8a8a">Text - TextMeshPro</text>
+                        </g>
+                    </svg>
+                    <figcaption>Figure 2: <strong>GameObject ▸ 3D Object</strong> (recreated). We'll use <strong>Plane</strong> for the floor and <strong>Cube</strong> for our object.</figcaption>
+                </figure>
+
+                <p>Add the two objects:</p>
+                <ol>
+                    <li>Choose <strong>GameObject ▸ 3D Object ▸ Plane</strong>. A flat floor appears at the world origin. This is our ground.</li>
+                    <li>Choose <strong>GameObject ▸ 3D Object ▸ Cube</strong>. A cube appears — but it's half-buried in the floor. We'll fix that next.</li>
+                </ol>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>New objects appear at position <code>(0, 0, 0)</code> — the <em>world origin</em>. That's why the cube starts embedded in the plane: they're both centred on the same spot.</p>
+                </div>
+            </section>
+
+            <section id="position" class="lesson-section">
+                <h2>Positioning the Cube</h2>
+                <p>A default Cube is 1 unit tall. Its centre sits at the floor, so half of it pokes through. Lift it up by half its height so it rests neatly on top.</p>
+                <ol>
+                    <li>Click the <strong>Cube</strong> in the Hierarchy to select it.</li>
+                    <li>In the <strong>Inspector</strong>, find the <strong>Transform</strong> component.</li>
+                    <li>Set the <strong>Position Y</strong> value to <code>0.5</code>. (Click the Y field, type <code>0.5</code>, press Enter.)</li>
+                </ol>
+                <p>The cube now sits perfectly on the floor — exactly like Figure 1. Notice you didn't move it by dragging; you typed an exact value. Precision like this is one of the Inspector's superpowers.</p>
+                <blockquote>
+                    <strong>⚠️ Remember the axes:</strong> <span style="color:#c0392b;font-weight:700;">X</span> is left/right, <span style="color:#27ae60;font-weight:700;">Y</span> is up/down, <span style="color:#2980b9;font-weight:700;">Z</span> is forward/back. We raised <strong>Y</strong> because we wanted the cube to go <em>up</em>.
+                </blockquote>
+            </section>
+
+            <section id="save" class="lesson-section">
+                <h2>Saving Your Scene</h2>
+                <p>Your scene only exists in memory until you save it. Do it now — and often.</p>
+                <ol>
+                    <li>Press <strong>Ctrl+S</strong> (Windows) or <strong>Cmd+S</strong> (Mac). Or use <strong>File ▸ Save</strong>.</li>
+                    <li>The first save asks for a name and location. Save it inside the <strong>Assets/Scenes</strong> folder as <code>MyFirstScene</code>.</li>
+                    <li>Look in the <strong>Project</strong> panel — your <code>MyFirstScene</code> file now appears in the Scenes folder.</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ The golden habit: save early, save often</h4>
+                    <p>Unity does not auto-save your scene. Press <strong>Ctrl+S</strong> after every meaningful change. An unsaved scene shows an asterisk <code>*</code> next to its name in the title bar — treat that asterisk as a nudge to save.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Challenge</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Build the scene from Figure 1</h3>
+                    <p><strong>Objective:</strong> Recreate the cube-on-a-floor scene entirely yourself.</p>
+                    <ol>
+                        <li>Create a new Basic (URP) scene.</li>
+                        <li>Add a <strong>Plane</strong> (floor) and a <strong>Cube</strong>.</li>
+                        <li>Set the Cube's <strong>Position Y</strong> to <code>0.5</code> so it rests on the floor.</li>
+                        <li>Save the scene as <code>MyFirstScene</code> in Assets/Scenes.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Hint: my cube is sunk into the floor</summary>
+                        <p>That means its Position Y is still 0. Select the cube, and in the Inspector set Transform → Position → Y to 0.5.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Success check</summary>
+                        <p>You should have a Plane and a Cube in the Hierarchy, the cube sitting on top of the floor in the Scene view, and a <code>MyFirstScene</code> file in Assets/Scenes with no asterisk in the title bar (meaning it's saved).</p>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Experiment</h3>
+                    <p>Add a <strong>Sphere</strong> next to the cube (<em>GameObject ▸ 3D Object ▸ Sphere</em>). Set its Position X to <code>2</code> so it sits beside the cube. Save again. You've just placed three objects in a scene — the beginning of every game.</p>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> A brand-new scene already contains which two objects?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A Main Camera and a Directional Light.">A) A Main Camera and a Directional Light</button>
+                            <button class="quiz-option" data-correct="false" data-hint="A cube isn't added automatically.">B) A Cube and a Plane</button>
+                            <button class="quiz-option" data-correct="false" data-hint="A new scene isn't empty.">C) Nothing — it's completely empty</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Your default cube is half-buried in the floor. What fixes it?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Scaling changes size, not height off the floor.">A) Increase its Scale</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Raising Position Y to 0.5 lifts it by half its height.">B) Set Position Y to 0.5</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Rotation turns it, it won't rise.">C) Set Rotation X to 90</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>scene</strong> is a container of objects — a level or screen — saved as a <code>.unity</code> file.</li>
+                        <li>New scenes come with a <strong>Main Camera</strong> and a <strong>Directional Light</strong>.</li>
+                        <li>Add objects from the <strong>GameObject ▸ 3D Object</strong> menu; they start at the origin (0,0,0).</li>
+                        <li>Type exact values in the <strong>Inspector</strong> to position objects, and <strong>Ctrl+S</strong> to save — early and often.</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've placed objects — but what <em>are</em> they, really? In <strong>Module 2, Lesson 2.1</strong> we open up the single most important idea in Unity: GameObjects and the components that make them tick.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Your first scene — done!</h3>
+                    <p>You created, positioned, and saved a real Unity scene. That's the loop behind every game ever made in Unity.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_03.html" class="prev-lesson">← Previous: The Unity Editor Interface</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_05.html" class="next-lesson">Next: GameObjects &amp; the Component Model →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

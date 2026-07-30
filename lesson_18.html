@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="React to collisions and triggers in code with OnCollisionEnter and OnTriggerEnter. Use tags to tell objects apart and Destroy to remove them.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.3: Handling Collisions in Code — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5: Physics &amp; Collisions</a></li>
+            <li aria-current="page">Lesson 5.3: Handling Collisions in Code</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>💥 Lesson 5.3: Handling Collisions in Code</h1>
+                <p class="lead">Detecting a bump or an overlap is only step one — now let's make code <em>respond</em>. This is where "the player touched the coin" becomes "collect it and add a point."</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Use <code>OnCollisionEnter</code> for solid hits</li>
+                        <li>Use <code>OnTriggerEnter</code> for trigger overlaps</li>
+                        <li>Identify what you hit using <strong>tags</strong> and <code>CompareTag</code></li>
+                        <li>Remove an object with <code>Destroy</code></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#events" class="toc-link">The Event Methods</a></li>
+                    <li><a href="#tags" class="toc-link">Tags: Knowing What You Hit</a></li>
+                    <li><a href="#destroy" class="toc-link">Destroying Objects</a></li>
+                    <li><a href="#together" class="toc-link">Putting It Together</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="events" class="lesson-section">
+                <h2>The Event Methods</h2>
+                <p>Unity automatically calls special methods on your script when a collision or trigger happens. You just write the method and Unity does the rest:</p>
+                <pre><code class="language-csharp">// Called when a SOLID collision begins
+void OnCollisionEnter(Collision collision)
+{
+    Debug.Log("Bumped into " + collision.gameObject.name);
+}
+
+// Called when a TRIGGER overlap begins
+void OnTriggerEnter(Collider other)
+{
+    Debug.Log("Overlapped with " + other.gameObject.name);
+}</code></pre>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Method</th><th>Fires when</th><th>Parameter tells you</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>OnCollisionEnter</code></td><td>solid objects bump</td><td>the <code>Collision</code> (has <code>.gameObject</code>)</td></tr>
+                            <tr><td><code>OnTriggerEnter</code></td><td>something enters a trigger</td><td>the other <code>Collider</code> (has <code>.gameObject</code>)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 Also available:</strong> <code>...Stay</code> (every frame while touching) and <code>...Exit</code> (when they separate). <code>Enter</code> is the one you'll use most.</blockquote>
+            </section>
+
+            <section id="tags" class="lesson-section">
+                <h2>Tags: Knowing What You Hit</h2>
+                <p>Usually you only care about <em>certain</em> collisions — "did the <strong>Player</strong> touch this?" A <strong>tag</strong> is a label you give a GameObject so code can recognize it:</p>
+                <ol>
+                    <li>Select the player. At the top of the Inspector, open the <strong>Tag</strong> dropdown and choose <strong>Player</strong> (a built-in tag), or <strong>Add Tag…</strong> to make your own.</li>
+                    <li>In code, check it with <code>CompareTag</code>:</li>
+                </ol>
+                <pre><code class="language-csharp">void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Player"))
+    {
+        Debug.Log("The player entered!");
+    }
+}</code></pre>
+                <div class="card card-warning">
+                    <h4>⚠️ Use CompareTag, not ==</h4>
+                    <p>Write <code>other.CompareTag("Player")</code>, not <code>other.tag == "Player"</code>. CompareTag is faster and won't throw if the tag is unset. Also — tags are case-sensitive and must exist in the Tag list first.</p>
+                </div>
+            </section>
+
+            <section id="destroy" class="lesson-section">
+                <h2>Destroying Objects</h2>
+                <p><code>Destroy</code> removes a GameObject from the scene — perfect for a collected coin or a defeated enemy:</p>
+                <pre><code class="language-csharp">Destroy(other.gameObject);   // remove the object we overlapped
+Destroy(gameObject);          // remove THIS object (the script's own GameObject)</code></pre>
+                <blockquote><strong>💡 gameObject vs other.gameObject:</strong> <code>gameObject</code> (lowercase) means "the object this script is on." <code>other.gameObject</code> means "the object we just touched." Destroying the wrong one is a common mix-up — read carefully.</blockquote>
+            </section>
+
+            <section id="together" class="lesson-section">
+                <h2>Putting It Together</h2>
+                <p>Here's a script for a coin that vanishes when the player walks into it. Put it on the coin (whose collider has <em>Is Trigger</em> ON):</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Coin : MonoBehaviour
+{
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Coin collected!");
+            Destroy(gameObject);   // remove the coin (this object)
+        }
+    }
+}</code></pre>
+                <div class="mermaid">
+                    graph LR
+                    A[Player enters coin's trigger] --> B{Is it tagged Player?}
+                    B -->|yes| C[Log + Destroy the coin]
+                    B -->|no| D[Ignore]
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: First pickup</h3>
+                    <ol>
+                        <li>Tag your player object as <strong>Player</strong>. Give it a Rigidbody (needed for triggers).</li>
+                        <li>Add a small Cube as a coin. Tick <strong>Is Trigger</strong> on its collider.</li>
+                        <li>Put the <code>Coin</code> script above on the coin.</li>
+                        <li>Press Play, walk the player into the coin — it disappears and the Console prints "Coin collected!".</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Nothing happens when I touch it</summary>
+                        <p>Checklist: (1) coin's collider has Is Trigger ON, (2) the player has a Rigidbody, (3) the player is tagged exactly "Player", (4) the script is on the coin. Missing any one is the usual cause.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which method fires when something enters a trigger zone?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's for solid bumps.">A) OnCollisionEnter</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! OnTriggerEnter fires for trigger overlaps.">B) OnTriggerEnter</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Start runs once at the beginning.">C) Start</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> In the Coin script, what does <code>Destroy(gameObject)</code> remove?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! gameObject = the object this script is on (the coin).">A) The coin — the object the script is attached to</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be other.gameObject.">B) The player</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It removes one object, not the scene.">C) The whole scene</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><code>OnCollisionEnter</code> handles solid bumps; <code>OnTriggerEnter</code> handles trigger overlaps.</li>
+                        <li>Use <strong>tags</strong> + <code>CompareTag("Player")</code> to react only to the right objects.</li>
+                        <li><code>Destroy(gameObject)</code> removes an object; mind <code>gameObject</code> vs <code>other.gameObject</code>.</li>
+                        <li>A pickup = trigger collider + OnTriggerEnter + tag check + Destroy.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You've built the mechanics of a pickup. <strong>Lesson 5.4</strong> polishes it into a proper collectible — spinning, tagged, and ready for a score.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Your code reacts to the world!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_17.html" class="prev-lesson">← Previous: Colliders &amp; Triggers</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_19.html" class="next-lesson">Next: Building a Collectible →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

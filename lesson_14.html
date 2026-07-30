@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Combine input with movement to control a player character that walks around the floor — your first real interactive object.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4.2: Moving a Player Character — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4: Input &amp; Player Control</a></li>
+            <li aria-current="page">Lesson 4.2: Moving a Player Character</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🕹️ Lesson 4.2: Moving a Player Character</h1>
+                <p class="lead">Time to make something you can actually control. We'll build a player from a capsule and write a short script that walks it around using the input you learned to read.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Set up a simple player object</li>
+                        <li>Combine Horizontal + Vertical input into a movement direction</li>
+                        <li>Move the player smoothly with <code>Time.deltaTime</code> and a tunable speed</li>
+                        <li>Understand why we build a <code>Vector3</code> movement each frame</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#player" class="toc-link">Building the Player</a></li>
+                    <li><a href="#script" class="toc-link">The Movement Script</a></li>
+                    <li><a href="#explain" class="toc-link">How It Works</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="player" class="lesson-section">
+                <h2>Building the Player</h2>
+                <p>Our player will be a simple capsule (a great stand-in for a character). Here it is on the floor with a couple of collectibles nearby — the beginnings of a game:</p>
+                <figure>
+                    <img src="images/player.png" alt="A real Unity render of a blue capsule player on a grey floor with two yellow collectible cubes.">
+                    <figcaption>Figure 1: Our player (blue capsule) and some collectibles (real render). We'll drive the capsule with the keyboard.</figcaption>
+                </figure>
+                <ol>
+                    <li>Add a <strong>Plane</strong> for the floor and a <strong>Capsule</strong> for the player.</li>
+                    <li>Set the Capsule's <strong>Position Y</strong> to <code>1</code> so it stands on the floor.</li>
+                    <li>Rename the Capsule to <code>Player</code> and (optionally) give it a coloured material.</li>
+                </ol>
+            </section>
+
+            <section id="script" class="lesson-section">
+                <h2>The Movement Script</h2>
+                <p>Create a script called <code>PlayerMovement</code> and attach it to the <code>Player</code>:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+    public float speed = 5f;   // units per second
+
+    void Update()
+    {
+        // 1. Read input (-1..+1 on each axis)
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        // 2. Build a direction: X from h, Z from v
+        Vector3 move = new Vector3(h, 0f, v);
+
+        // 3. Apply movement, scaled by speed and frame time
+        transform.Translate(move * speed * Time.deltaTime);
+    }
+}</code></pre>
+                <p>Press Play and steer with WASD or the arrow keys. Your capsule glides around the floor. That's a controllable character in twelve lines!</p>
+            </section>
+
+            <section id="explain" class="lesson-section">
+                <h2>How It Works</h2>
+                <div class="mermaid">
+                    graph LR
+                    A[Read h and v<br/>from keys] --> B[Make Vector3<br/>h, 0, v]
+                    B --> C[Multiply by speed<br/>and deltaTime]
+                    C --> D[transform.Translate<br/>moves the player]
+                </div>
+                <ul>
+                    <li>We put <code>h</code> on <strong>X</strong> (left/right) and <code>v</code> on <strong>Z</strong> (forward/back). <strong>Y</strong> stays 0 — we don't want the player flying up.</li>
+                    <li>Holding two keys (e.g. up + right) gives diagonal movement automatically, because both axes have values.</li>
+                    <li><code>Time.deltaTime</code> keeps the speed consistent everywhere (Lesson 3.3).</li>
+                </ul>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Tune <strong>Speed</strong> in the Inspector while the game runs. Too slow feels sluggish; too fast feels slippery. Finding the "feel" by tweaking a public field is exactly how real games are balanced.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ Diagonal is faster?</h4>
+                    <p>With raw axis values, moving diagonally can be slightly faster than straight. For this course that's fine; if it bothers you, look up <code>Vector3.ClampMagnitude</code> or <code>.normalized</code> later. Don't let it distract you now.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Walk the floor</h3>
+                    <ol>
+                        <li>Build the Player capsule and attach <code>PlayerMovement</code>.</li>
+                        <li>Press Play and drive around with WASD / arrows.</li>
+                        <li>Change <strong>Speed</strong> in the Inspector to find a feel you like.</li>
+                        <li><strong>Challenge:</strong> add a jump — when Space is pressed, nudge the player's Y up. (We'll do proper physics jumps in Module 5; a simple version is fine here.)</li>
+                    </ol>
+                    <details>
+                        <summary>💡 The player won't move</summary>
+                        <p>Three usual causes: (1) the script isn't on the Player, (2) Speed is 0, or (3) Active Input Handling isn't set to Both (Lesson 4.1). Check the Console for input errors.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Simple jump nudge</summary>
+                        <pre><code class="language-csharp">if (Input.GetKeyDown(KeyCode.Space))
+{
+    transform.Translate(0f, 1.5f, 0f);  // a quick hop (not real physics)
+}</code></pre>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In <code>new Vector3(h, 0f, v)</code>, why is the middle value 0?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Y is up/down; we keep the player on the ground.">A) It's the Y axis — we don't want the player to move up/down</button>
+                            <button class="quiz-option" data-correct="false" data-hint="0 isn't the speed.">B) It sets the speed to zero</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's a position component, not a timer.">C) It's the time value</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Removing <code>* Time.deltaTime</code> would cause…</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Speed would then depend on frame rate — far too fast.">A) Movement speed to depend on frame rate (usually way too fast)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It still moves, just wrongly.">B) The player to stop moving entirely</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Colour is unrelated.">C) The player to change colour</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Read <code>Horizontal</code> and <code>Vertical</code>, then build a <code>Vector3(h, 0, v)</code>.</li>
+                        <li>Move with <code>transform.Translate(move * speed * Time.deltaTime)</code>.</li>
+                        <li>Keep Y at 0 to stay grounded; tune <code>speed</code> in the Inspector for feel.</li>
+                        <li>Diagonal input combines automatically from the two axes.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Your player moves — but the camera sits still and the player can wander off screen. <strong>Lesson 4.3</strong> makes the camera follow.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You have a playable character!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_13.html" class="prev-lesson">← Previous: Reading Player Input</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_15.html" class="next-lesson">Next: Making the Camera Follow →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

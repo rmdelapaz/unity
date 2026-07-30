@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meshes define an object's shape; materials define how its surface looks. Create a coloured material with URP's Lit shader and apply it.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.3: Primitives, Meshes &amp; Materials — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2: GameObjects &amp; Components</a></li>
+            <li aria-current="page">Lesson 2.3: Primitives, Meshes &amp; Materials</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🎨 Lesson 2.3: Primitives, Meshes &amp; Materials</h1>
+                <p class="lead">A <strong>mesh</strong> is an object's shape. A <strong>material</strong> is how its surface looks — colour, shininess, texture. Together they decide what you see. Let's add some colour to your world.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Explain the difference between a <strong>mesh</strong> and a <strong>material</strong></li>
+                        <li>Understand the Mesh Filter + Mesh Renderer pair</li>
+                        <li>Create a new <strong>Material</strong> asset and set its Base colour (URP Lit shader)</li>
+                        <li>Apply a material to an object by dragging</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#primitives" class="toc-link">Primitives: Built-in Shapes</a></li>
+                    <li><a href="#mesh" class="toc-link">Meshes: the Shape</a></li>
+                    <li><a href="#material" class="toc-link">Materials: the Look</a></li>
+                    <li><a href="#make" class="toc-link">Making a Material</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="primitives" class="lesson-section">
+                <h2>Primitives: Built-in Shapes</h2>
+                <p>Unity ships with a handful of ready-made shapes called <strong>primitives</strong> — Cube, Sphere, Capsule, Cylinder, Plane, and Quad. They're perfect for learning and for "blocking out" a game before you have real 3D art.</p>
+                <figure>
+                    <img src="images/primitives.png" alt="A real Unity render of a cube, sphere, capsule, and cylinder on a floor.">
+                    <figcaption>Figure 1: The common primitives (real render). Each is a GameObject with a built-in mesh.</figcaption>
+                </figure>
+            </section>
+
+            <section id="mesh" class="lesson-section">
+                <h2>Meshes: the Shape</h2>
+                <p>A <strong>mesh</strong> is the actual 3D shape — a web of points and triangles. Two components work together to show it:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Component</th><th>Job</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Mesh Filter</strong></td><td>Holds <em>which</em> mesh this object uses (e.g. "Cube").</td></tr>
+                            <tr><td><strong>Mesh Renderer</strong></td><td>Actually <em>draws</em> the mesh, and holds the material(s) used to paint it.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡</strong> Remove the Mesh Renderer and the object becomes invisible (but still exists). Remove the Mesh Filter and there's no shape to draw at all.</blockquote>
+            </section>
+
+            <section id="material" class="lesson-section">
+                <h2>Materials: the Look</h2>
+                <p>A <strong>material</strong> controls the surface appearance of a mesh — its colour, how shiny or rough it is, and any texture image wrapped onto it. The same sphere mesh with five different materials gives five very different looks:</p>
+                <figure>
+                    <img src="images/materials.png" alt="A real Unity render of five spheres with red, green, blue, yellow, and purple materials.">
+                    <figcaption>Figure 2: One mesh (Sphere), five materials (real render). Materials are where colour lives.</figcaption>
+                </figure>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Material:</strong> an asset that describes a surface's appearance. It uses a <strong>shader</strong> (the maths that draws the surface) — in URP the default is <em>Universal Render Pipeline/Lit</em> — and exposes settings like the <strong>Base Map</strong> colour.</p>
+                </div>
+            </section>
+
+            <section id="make" class="lesson-section">
+                <h2>Making a Material</h2>
+                <p>New primitives start with a plain grey default material. Let's make a coloured one:</p>
+                <ol>
+                    <li>In the <strong>Project</strong> panel, right-click ▸ <strong>Create ▸ Material</strong>.</li>
+                    <li>Name it something clear, like <code>Mat_Red</code>.</li>
+                    <li>Select it. In the Inspector, its <strong>Shader</strong> should read <em>Universal Render Pipeline/Lit</em>.</li>
+                    <li>Click the <strong>Base Map</strong> colour swatch and pick a red.</li>
+                    <li><strong>Drag the material</strong> from the Project panel onto your object in the Scene view (or into its Mesh Renderer's Materials slot). Done — it's now red.</li>
+                </ol>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: reuse materials</h4>
+                    <p>One material can be applied to many objects. Change the material's colour once and <em>every</em> object using it updates instantly. Create a small palette of materials and reuse them across your game for a consistent look.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ Watch Out: everything turned pink/magenta?</h4>
+                    <p>Bright magenta means a material's shader doesn't match your render pipeline. In a URP project, make sure materials use a <em>Universal Render Pipeline</em> shader (like Lit). This most often happens with assets made for the older Built-in pipeline.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: A colourful row</h3>
+                    <ol>
+                        <li>Add three Spheres to a scene, spaced out along X.</li>
+                        <li>Create three Materials — red, green, blue — with the Lit shader.</li>
+                        <li>Drag one colour onto each sphere.</li>
+                        <li>Bonus: apply your red material to a Cube too, and notice it's the same material reused.</li>
+                    </ol>
+                    <details>
+                        <summary>✅ Success check</summary>
+                        <p>Three coloured spheres like Figure 2. If a sphere is still grey, you didn't drop the material onto it — try dragging directly onto the object in the Scene view.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does a material control?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Shape is the mesh.">A) The object's shape</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Material = surface appearance (colour, shininess, texture).">B) The surface appearance — colour, shininess, texture</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Position is the Transform.">C) The object's position</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Your object turned bright magenta. Most likely cause?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A shader/pipeline mismatch shows as magenta.">A) Its material's shader doesn't match the render pipeline (URP)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Scale doesn't affect colour.">B) Its scale is too large</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Magenta is the classic 'bad shader' colour, not a lighting issue.">C) There's no light in the scene</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Primitives</strong> are built-in shapes great for prototyping.</li>
+                        <li>A <strong>mesh</strong> is the shape; <strong>Mesh Filter</strong> holds it and <strong>Mesh Renderer</strong> draws it.</li>
+                        <li>A <strong>material</strong> controls surface look and uses a shader (URP <em>Lit</em> by default).</li>
+                        <li>Create materials in the Project panel and drag them onto objects; reuse them for consistency.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>What if you want fifty identical crates and the power to change them all at once? That's what <strong>Prefabs</strong> are for — Lesson 2.4.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Your world has colour now!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_06.html" class="prev-lesson">← Previous: The Transform</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_08.html" class="next-lesson">Next: Prefabs — Reusable GameObjects →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

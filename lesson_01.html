@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="What Unity is, what a game engine does, and the mini-game you'll build across this course — an orientation for absolute beginners.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.1: What Is Unity &amp; What You'll Build — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1: Meet Unity</a></li>
+            <li aria-current="page">Lesson 1.1: What Is Unity &amp; What You'll Build</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🚀 Lesson 1.1: What Is Unity &amp; What You'll Build</h1>
+                <p class="lead">Welcome! Before we touch a single button, let's answer the big questions: What <em>is</em> Unity? What's a "game engine"? And what will you actually have made by the end of this course?</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain in plain words what a <strong>game engine</strong> is and what Unity does for you</li>
+                        <li>Describe the kinds of things people build with Unity</li>
+                        <li>Understand the small game you'll build in this course and the path to get there</li>
+                        <li>Set the right expectations for learning — including the coding part</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 20 minutes</p>
+                    <p><strong>You'll need:</strong> Nothing but curiosity. No software yet — we install Unity next lesson.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span>
+                    <span class="toc-label">In This Lesson</span>
+                    <span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what" class="toc-link">What Is a Game Engine?</a></li>
+                        <li><a href="#unity" class="toc-link">So, What Is Unity?</a></li>
+                        <li><a href="#build" class="toc-link">What You'll Build</a></li>
+                        <li><a href="#path" class="toc-link">Your Learning Path</a></li>
+                        <li><a href="#mindset" class="toc-link">The Right Mindset</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <section id="what" class="lesson-section">
+                <h2>What Is a Game Engine?</h2>
+                <p>Imagine you want to build a video game. You'd need a way to draw 3D shapes on screen, make them fall with gravity, detect when two things bump into each other, play sounds, read the keyboard, show a score, and package it all into something people can run. Writing every one of those systems from scratch would take years.</p>
+                <p>A <strong>game engine</strong> is a big toolbox that already contains all of those systems. You get graphics, physics, audio, input, and much more — pre-built and ready. Your job shifts from "invent everything" to "arrange and direct these tools to make <em>your</em> game." That's a huge head start.</p>
+
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Game engine:</strong> a software framework that provides the common building blocks of games — rendering, physics, audio, input, and more — so creators can focus on designing their game instead of rebuilding the basics.</p>
+                </div>
+            </section>
+
+            <section id="unity" class="lesson-section">
+                <h2>So, What Is Unity?</h2>
+                <p><strong>Unity</strong> is one of the most popular game engines in the world. A large share of the mobile games on your phone were made with it, along with countless PC and console games, plus experiences in film, architecture, car design, and training simulations.</p>
+                <p>People choose Unity because it is:</p>
+                <ul>
+                    <li><strong>Beginner-friendly</strong> — a visual editor lets you build a lot by dragging, clicking, and typing values, not just code.</li>
+                    <li><strong>Free to start</strong> — the Personal plan is free for individuals and small teams.</li>
+                    <li><strong>Cross-platform</strong> — build once, then export to Windows, Mac, the web, phones, and consoles.</li>
+                    <li><strong>Well-documented</strong> — enormous community, tutorials, and official docs when you get stuck.</li>
+                </ul>
+                <p>Unity has two halves that work together, and you'll use both throughout this course:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>The Editor</th><th>C# Scripting</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>The visual workspace where you place objects, set up scenes, and press Play. You met it in the tour (Lesson 1.3).</td>
+                                <td>The code you write to give objects <em>behaviour</em> — move, shoot, score, react. We start this in Module 3, gently.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="build" class="lesson-section">
+                <h2>What You'll Build</h2>
+                <p>Throughout this course you'll build a small but <em>complete</em> game: a character on a floor, collectible items to gather, a score on screen, sound effects, and a win condition — the kind of "collect-the-items" game that teaches every core skill you need. Here's a real frame from the example project we'll learn from:</p>
+
+                <figure>
+                    <img src="images/editor-game-view.png" alt="A real Unity render of the example game: a grey robot on a large white grid floor under a blue sky, with collectible yellow stars and coloured cubes nearby.">
+                    <figcaption>Figure 1: A real render from the example project — a player character, collectible stars, and obstacles. Your mini-game in Module 7 will be built in this same style.</figcaption>
+                </figure>
+
+                <p>You'll also create your very first scene from scratch — as simple as a single cube on the ground — and grow your skills from there:</p>
+
+                <figure>
+                    <img src="images/first-scene.png" alt="A real Unity render of a simple first scene: one white cube resting on a flat grey plane under a blue sky.">
+                    <figcaption>Figure 2: Your first scene will look about this simple — and you'll make it yourself in Lesson 1.4. Everything big starts here.</figcaption>
+                </figure>
+
+                <blockquote>
+                    <strong>💡 Small on purpose.</strong> We deliberately keep the game small. A finished small game teaches you far more than an ambitious project you never complete. Once you've shipped one, bigger ideas become "just more of the same."
+                </blockquote>
+            </section>
+
+            <section id="path" class="lesson-section">
+                <h2>Your Learning Path</h2>
+                <p>Here's the journey, module by module. Each step builds on the one before:</p>
+                <div class="mermaid">
+                    graph TD
+                    A[1 · Meet Unity<br/>install &amp; find your way around] --> B[2 · GameObjects &amp; Components<br/>build scenes]
+                    B --> C[3 · C# Scripting<br/>make things behave]
+                    C --> D[4 · Input &amp; Control<br/>move a player]
+                    D --> E[5 · Physics &amp; Collisions<br/>gravity &amp; pickups]
+                    E --> F[6 · UI &amp; Feedback<br/>score, sound]
+                    F --> G[7 · Mini-Game Project<br/>put it together]
+                    G --> H[8 · Build &amp; Share<br/>ship your game]
+                </div>
+                <p>You are here: the very beginning of Module 1. By the end you'll have travelled the whole path and built a real game.</p>
+            </section>
+
+            <section id="mindset" class="lesson-section">
+                <h2>The Right Mindset</h2>
+                <div class="card card-success">
+                    <h4>✅ What helps</h4>
+                    <ul>
+                        <li><strong>Do, don't just read.</strong> Open Unity and try each step yourself. Muscle memory beats theory.</li>
+                        <li><strong>Expect to be confused sometimes.</strong> That's normal and temporary — every developer has felt it.</li>
+                        <li><strong>Small experiments.</strong> Change a number, press Play, see what happens. Unity is safe to poke.</li>
+                    </ul>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ What to avoid</h4>
+                    <ul>
+                        <li><strong>Don't rush to a dream game.</strong> Finish the fundamentals first — they're the foundation everything else sits on.</li>
+                        <li><strong>Don't fear the code.</strong> We introduce C# slowly, one small idea at a time. You do not need prior programming.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>game engine</strong> is a toolbox of ready-made game systems (graphics, physics, audio, input).</li>
+                        <li><strong>Unity</strong> is a popular, beginner-friendly, free-to-start, cross-platform engine.</li>
+                        <li>Unity has two halves: the visual <strong>Editor</strong> and <strong>C# scripting</strong>.</li>
+                        <li>You'll build a small, complete collect-the-items game — starting from a single cube.</li>
+                    </ul>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the main benefit of using a game engine like Unity?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Engines help with far more than graphics.">A) It only draws 3D graphics for you</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The engine provides the common systems so you can focus on your game.">B) It provides ready-made systems (graphics, physics, audio, input) so you don't rebuild them</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Unity doesn't design your game for you — you do.">C) It designs the whole game automatically</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which two halves of Unity will you use in this course?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The visual Editor plus C# scripting.">A) The visual Editor and C# scripting</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Unity uses C#, not Python, as its main language.">B) The Editor and Python scripting</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no separate 'art engine' — art is imported as assets.">C) The Editor and a separate art engine</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Time to get Unity onto your computer. In <strong>Lesson 1.2</strong> we'll install Unity Hub and Unity 6, step by step.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You're off!</h3>
+                    <p>You now know what Unity is and where you're headed. Let's get it installed.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="index.html" class="prev-lesson">← Course Home</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_02.html" class="next-lesson">Next: Installing Unity Hub &amp; Unity 6 →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

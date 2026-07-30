@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Move and rotate objects from C#. Learn transform.Translate and transform.Rotate, Vector3 directions, and why Time.deltaTime makes motion smooth.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.3: Moving Objects with Code — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3: C# Scripting Basics</a></li>
+            <li aria-current="page">Lesson 3.3: Moving Objects with Code</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🏃 Lesson 3.3: Moving Objects with Code</h1>
+                <p class="lead">Let's bring an object to life. In this lesson you'll make a cube spin and glide using code — and learn the single most important trick for smooth, fair movement: <code>Time.deltaTime</code>.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Move an object with <code>transform.Translate</code></li>
+                        <li>Rotate an object with <code>transform.Rotate</code></li>
+                        <li>Use <strong>Vector3</strong> to describe directions</li>
+                        <li>Understand why <code>Time.deltaTime</code> keeps motion smooth and frame-rate independent</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#target" class="toc-link">Our Target Object</a></li>
+                    <li><a href="#rotate" class="toc-link">Rotating with Code</a></li>
+                    <li><a href="#deltatime" class="toc-link">The Time.deltaTime Trick</a></li>
+                    <li><a href="#translate" class="toc-link">Moving with Translate</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="target" class="lesson-section">
+                <h2>Our Target Object</h2>
+                <p>We'll script a simple cube — the humble object from your first scene. It can't show motion in a still image, of course, but pressing Play will make it come alive:</p>
+                <figure>
+                    <img src="images/first-scene.png" alt="A real Unity render of a single cube on a plane — the object we'll animate with code.">
+                    <figcaption>Figure 1: Our subject (real render). By the end of this lesson it will spin and slide under code control.</figcaption>
+                </figure>
+            </section>
+
+            <section id="rotate" class="lesson-section">
+                <h2>Rotating with Code</h2>
+                <p>Every script can reach its own GameObject's Transform via the word <code>transform</code>. To spin the object a little every frame, put a <code>Rotate</code> call in <code>Update()</code>:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Spinner : MonoBehaviour
+{
+    void Update()
+    {
+        transform.Rotate(0f, 1f, 0f);   // turn 1 degree around Y each frame
+    }
+}</code></pre>
+                <p>Attach this to the cube, press Play, and it spins. But there's a problem hiding in that <code>1f</code>…</p>
+            </section>
+
+            <section id="deltatime" class="lesson-section">
+                <h2>The Time.deltaTime Trick</h2>
+                <p>"1 degree per frame" sounds fine — until you realize <strong>different computers run at different frame rates</strong>. A fast PC might draw 240 frames per second; a slow one 30. Our cube would spin 8× faster on the fast machine. Unfair and inconsistent!</p>
+                <p>The fix is <code>Time.deltaTime</code> — the number of seconds since the last frame. Multiply your movement by it and you get a consistent "per second" speed on <em>every</em> machine:</p>
+                <pre><code class="language-csharp">public class Spinner : MonoBehaviour
+{
+    public float speed = 90f;   // degrees per SECOND
+
+    void Update()
+    {
+        transform.Rotate(0f, speed * Time.deltaTime, 0f);
+    }
+}</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Time.deltaTime:</strong> the time in seconds that the last frame took. Multiplying movement by it converts "per frame" into "per second," so motion looks the same regardless of frame rate.</p>
+                </div>
+                <blockquote><strong>💡 Golden rule:</strong> any movement or rotation inside <code>Update()</code> should be multiplied by <code>Time.deltaTime</code>. Say it with me: "times delta time." You'll write it hundreds of times.</blockquote>
+            </section>
+
+            <section id="translate" class="lesson-section">
+                <h2>Moving with Translate</h2>
+                <p>To slide an object, use <code>transform.Translate</code>. Directions are given as a <strong>Vector3</strong> — three numbers for X, Y, Z. Unity provides handy shortcuts like <code>Vector3.forward</code> and <code>Vector3.up</code>:</p>
+                <pre><code class="language-csharp">public class Glider : MonoBehaviour
+{
+    public float speed = 3f;   // units per second
+
+    void Update()
+    {
+        // move forward (along +Z) at 'speed' units per second
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+    }
+}</code></pre>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Shortcut</th><th>Direction</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>Vector3.forward</code></td><td>+Z (into the screen)</td></tr>
+                            <tr><td><code>Vector3.up</code></td><td>+Y (upward)</td></tr>
+                            <tr><td><code>Vector3.right</code></td><td>+X (to the right)</td></tr>
+                            <tr><td><code>new Vector3(1, 0, 0)</code></td><td>A custom direction (here, +X)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Spin and glide</h3>
+                    <ol>
+                        <li>Add the <code>Spinner</code> script (with <code>Time.deltaTime</code>) to a cube. Press Play — it spins smoothly.</li>
+                        <li>In the Inspector, change <strong>Speed</strong> to <code>180</code> — it now spins twice as fast. Try <code>-90</code> to reverse.</li>
+                        <li>Add a <code>Glider</code> script too, and watch the cube spin <em>and</em> drift forward.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 It spins wildly fast / not at all</summary>
+                        <p>Wildly fast usually means you forgot <code>* Time.deltaTime</code>. Not at all usually means the script isn't attached or Speed is 0.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Challenge solution: bob up and down</summary>
+                        <pre><code class="language-csharp">void Update()
+{
+    float y = Mathf.Sin(Time.time * 2f) * 0.5f; // gentle wave
+    transform.position = new Vector3(0f, 1f + y, 0f);
+}</code></pre>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Why multiply movement by <code>Time.deltaTime</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It makes motion consistent across different frame rates.">A) So motion is the same speed on fast and slow machines</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's about frame rate, not colour.">B) To change the object's colour</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't save the scene.">C) To save the scene automatically</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which reaches the current object's Transform inside its own script?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The keyword transform refers to this object's Transform.">A) transform</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's for printing.">B) Debug.Log</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Vector3 is a direction/point, not the object.">C) Vector3</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><code>transform.Rotate(...)</code> spins an object; <code>transform.Translate(...)</code> moves it.</li>
+                        <li>Directions use <strong>Vector3</strong> (X, Y, Z), with shortcuts like <code>Vector3.forward</code>.</li>
+                        <li>Always multiply per-frame motion by <code>Time.deltaTime</code> for smooth, fair speed.</li>
+                        <li>Expose <code>speed</code> as a public field to tune motion in the Inspector.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Code doesn't always work first time — and that's fine. <strong>Lesson 3.4</strong> shows you how to read the Console and squash the errors every beginner hits.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 It moves — because you told it to!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_10.html" class="prev-lesson">← Previous: Variables &amp; Public Inspector Fields</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_12.html" class="next-lesson">Next: Debugging with the Console →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

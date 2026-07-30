@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prefabs are reusable GameObject blueprints. Create one, place many instances, and edit them all at once — the key to building efficiently.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.4: Prefabs — Reusable GameObjects — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2: GameObjects &amp; Components</a></li>
+            <li aria-current="page">Lesson 2.4: Prefabs</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 2.4: Prefabs — Reusable GameObjects</h1>
+                <p class="lead">Imagine placing 50 identical coins, then deciding they should all be gold. Editing 50 objects by hand would be misery. <strong>Prefabs</strong> solve this: build one blueprint, reuse it everywhere, and edit them all at once.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Explain what a <strong>Prefab</strong> is and why it saves enormous time</li>
+                        <li>Create a prefab by dragging a GameObject into the Project panel</li>
+                        <li>Place multiple <strong>instances</strong> of a prefab in a scene</li>
+                        <li>Edit the prefab once and update every instance</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#problem" class="toc-link">The Problem Prefabs Solve</a></li>
+                    <li><a href="#what" class="toc-link">What Is a Prefab?</a></li>
+                    <li><a href="#create" class="toc-link">Creating &amp; Placing</a></li>
+                    <li><a href="#edit" class="toc-link">Editing a Prefab</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="problem" class="lesson-section">
+                <h2>The Problem Prefabs Solve</h2>
+                <p>Here are nine identical crates. Suppose you want to change their colour, or give them all a Rigidbody, or resize them. Without prefabs you'd edit each crate nine times. With a prefab, you edit <em>once</em> and all nine update together:</p>
+                <figure>
+                    <img src="images/prefabs.png" alt="A real Unity render of a 3-by-3 grid of nine identical orange crates on a floor.">
+                    <figcaption>Figure 1: Nine instances of one crate prefab (real render). Change the prefab → all nine change.</figcaption>
+                </figure>
+            </section>
+
+            <section id="what" class="lesson-section">
+                <h2>What Is a Prefab?</h2>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Prefab:</strong> a saved, reusable <em>blueprint</em> of a GameObject (with all its components and settings), stored as an asset in your Project. Copies you place in a scene are called <strong>instances</strong>, and they stay linked to the blueprint.</p>
+                </div>
+                <p>Think of a prefab as a cookie cutter and the instances as the cookies. Reshape the cutter and every future — and existing — cookie takes the new shape.</p>
+                <div class="mermaid">
+                    graph TD
+                    P[Crate Prefab<br/>the blueprint asset] --> I1[Instance in scene]
+                    P --> I2[Instance in scene]
+                    P --> I3[Instance in scene]
+                    P --> I4[...many more]
+                </div>
+            </section>
+
+            <section id="create" class="lesson-section">
+                <h2>Creating &amp; Placing Prefabs</h2>
+                <p><strong>To create a prefab:</strong></p>
+                <ol>
+                    <li>Build a GameObject the way you want it (e.g. a Cube with an orange material, renamed <code>Crate</code>).</li>
+                    <li>Make a <strong>Prefabs</strong> folder in the Project panel (right-click ▸ Create ▸ Folder) to stay organized.</li>
+                    <li><strong>Drag</strong> the <code>Crate</code> from the Hierarchy into that folder. It becomes a prefab asset, and the Hierarchy entry turns blue (meaning "this is a prefab instance").</li>
+                </ol>
+                <p><strong>To place more instances:</strong> drag the prefab from the Project panel into the Scene view as many times as you like. Each is a linked copy.</p>
+                <blockquote><strong>💡</strong> A blue GameObject name in the Hierarchy is your signal that it's a prefab instance. Plain (non-blue) means it's a one-off, not linked to any prefab.</blockquote>
+            </section>
+
+            <section id="edit" class="lesson-section">
+                <h2>Editing a Prefab</h2>
+                <p>Double-click the prefab asset (or click <strong>Open</strong> in its Inspector) to enter <strong>Prefab Mode</strong> — an isolated editing view. Any change you make there applies to <em>all</em> instances everywhere.</p>
+                <div class="card card-success">
+                    <h4>✅ Overrides: per-instance tweaks</h4>
+                    <p>You can still customize a single instance (say, rotate one crate) without breaking the link — that's called an <strong>override</strong>, shown in <strong>bold</strong> in the Inspector. The rest of the instance still follows the prefab.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ Watch Out</h4>
+                    <p>Editing an instance directly in the scene only changes <em>that</em> instance (as an override). To change <em>all</em> instances, edit the prefab asset itself (Prefab Mode), not one instance.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Crate factory</h3>
+                    <ol>
+                        <li>Make a Cube, give it an orange material, rename it <code>Crate</code>.</li>
+                        <li>Create a <strong>Prefabs</strong> folder and drag <code>Crate</code> into it to make the prefab.</li>
+                        <li>Drag the prefab into the scene <strong>five</strong> more times; arrange them in a row.</li>
+                        <li>Open the prefab (Prefab Mode) and change its material to blue. Exit — <em>all six</em> crates are now blue.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 My crates didn't all change colour</summary>
+                        <p>You probably edited one instance in the scene instead of the prefab asset. Double-click the prefab in the Project panel to open Prefab Mode, then change the colour there.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> You edit the crate <em>prefab asset</em> and change its colour. What happens to the instances in your scene?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! All linked instances update.">A) They all update to the new colour</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Instances stay linked to the prefab.">B) Only new ones you place afterwards change</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The link means they do change.">C) Nothing changes</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> In the Hierarchy, a prefab instance's name is shown in...</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Blue signals a prefab instance.">A) Blue</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Red isn't used for this.">B) Red</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Blue is the tell-tale colour.">C) The same as everything else</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>prefab</strong> is a reusable GameObject blueprint saved as an asset.</li>
+                        <li>Copies in a scene are <strong>instances</strong>, linked to the prefab.</li>
+                        <li>Create one by dragging a GameObject into the Project panel; place more by dragging it out.</li>
+                        <li>Edit the prefab (Prefab Mode) to update every instance; per-instance <strong>overrides</strong> show in bold.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You can build and arrange scenes now. Time to make things <em>behave</em>. <strong>Module 3</strong> begins your journey into C# scripting — starting gently with your very first script.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 2 complete!</h3>
+                    <p>GameObjects, components, transforms, materials, prefabs — the whole building toolkit. Next: code.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_07.html" class="prev-lesson">← Previous: Primitives, Meshes &amp; Materials</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_09.html" class="next-lesson">Next: Your First Script — MonoBehaviour →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

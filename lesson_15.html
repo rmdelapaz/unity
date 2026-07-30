@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Make the camera smoothly follow your player with a simple offset script — and learn why camera code belongs in LateUpdate.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4.3: Making the Camera Follow — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4: Input &amp; Player Control</a></li>
+            <li aria-current="page">Lesson 4.3: Making the Camera Follow</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🎥 Lesson 4.3: Making the Camera Follow</h1>
+                <p class="lead">A moving player is no fun if it slides off screen. Let's write a short script that keeps the camera glued behind the player at a fixed offset — the classic follow-cam.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Reference another object from a script with a <code>public Transform</code></li>
+                        <li>Keep the camera at a fixed <strong>offset</strong> from the player</li>
+                        <li>Understand why camera code belongs in <code>LateUpdate()</code></li>
+                        <li>Assign a target by dragging it into a public slot in the Inspector</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#goal" class="toc-link">The Follow-Cam Idea</a></li>
+                    <li><a href="#script" class="toc-link">The Follow Script</a></li>
+                    <li><a href="#assign" class="toc-link">Assigning the Target</a></li>
+                    <li><a href="#late" class="toc-link">Why LateUpdate?</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="goal" class="lesson-section">
+                <h2>The Follow-Cam Idea</h2>
+                <p>A follow camera keeps a constant <strong>offset</strong> from the player: say, 7 units back and 5 units up, always looking at them. Wherever the player goes, the camera trails along like it's on an invisible pole. Here's roughly the framing we're after:</p>
+                <figure>
+                    <img src="images/player-followcam.png" alt="A real Unity render from behind and above a blue capsule player, the view a follow camera would show.">
+                    <figcaption>Figure 1: A follow-cam viewpoint (real render) — behind and slightly above the player, keeping them centred.</figcaption>
+                </figure>
+            </section>
+
+            <section id="script" class="lesson-section">
+                <h2>The Follow Script</h2>
+                <p>Create a script <code>CameraFollow</code> and attach it to the <strong>Main Camera</strong>:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class CameraFollow : MonoBehaviour
+{
+    public Transform target;                       // the player to follow
+    public Vector3 offset = new Vector3(0f, 5f, -7f);  // behind &amp; above
+
+    void LateUpdate()
+    {
+        if (target == null) return;                // safety: no target set
+
+        // sit at the target's position plus our offset
+        transform.position = target.position + offset;
+
+        // look toward the target
+        transform.LookAt(target);
+    }
+}</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Transform reference:</strong> a <code>public Transform target</code> is a slot that points at another object's Transform. Your script can then read <code>target.position</code> to know where that object is.</p>
+                </div>
+            </section>
+
+            <section id="assign" class="lesson-section">
+                <h2>Assigning the Target</h2>
+                <p>The script has a <code>target</code> slot but doesn't know <em>which</em> object to follow until you tell it:</p>
+                <ol>
+                    <li>Select the <strong>Main Camera</strong> — the Inspector shows the CameraFollow component with an empty <strong>Target</strong> slot.</li>
+                    <li><strong>Drag the Player</strong> from the Hierarchy into that Target slot.</li>
+                    <li>Press Play and move — the camera now follows!</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ NullReferenceException on the camera?</h4>
+                    <p>That means the Target slot is still empty. This is the classic "forgot to drag the object in" bug from Lesson 3.4. Drag the Player into the Target slot and it's fixed. (Our <code>if (target == null) return;</code> line guards against a crash meanwhile.)</p>
+                </div>
+            </section>
+
+            <section id="late" class="lesson-section">
+                <h2>Why LateUpdate?</h2>
+                <p>We put the camera code in <code>LateUpdate()</code> instead of <code>Update()</code>. Here's why it matters:</p>
+                <ul>
+                    <li><code>Update()</code> runs for all scripts each frame — including the one that moves the player.</li>
+                    <li><code>LateUpdate()</code> runs <em>after</em> every <code>Update()</code> has finished.</li>
+                    <li>So by the time the camera moves in LateUpdate, the player has already moved this frame. The camera follows the player's <em>final</em> position — smooth, no jitter.</li>
+                </ul>
+                <div class="mermaid">
+                    graph LR
+                    A[Update:<br/>player moves] --> B[Update:<br/>everything else] --> C[LateUpdate:<br/>camera follows final position]
+                </div>
+                <blockquote><strong>💡 Rule of thumb:</strong> anything that should react to where objects <em>ended up</em> this frame — cameras especially — goes in <code>LateUpdate()</code>.</blockquote>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Chase cam</h3>
+                    <ol>
+                        <li>Attach <code>CameraFollow</code> to the Main Camera.</li>
+                        <li>Drag the Player into the Target slot.</li>
+                        <li>Press Play and drive around — confirm the camera trails you.</li>
+                        <li>Tweak the <strong>Offset</strong> (e.g. Y = 8, Z = -10 for a higher, further view). Find your favourite.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 The camera snaps oddly or spins</summary>
+                        <p>Make sure the offset keeps the camera <em>behind</em> and <em>above</em> (negative Z, positive Y). <code>LookAt(target)</code> then aims it correctly. If it's upside down, your offset Y is probably negative.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Bonus: smooth follow</summary>
+                        <pre><code class="language-csharp">// Instead of snapping, ease toward the target position:
+transform.position = Vector3.Lerp(transform.position,
+                                  target.position + offset,
+                                  5f * Time.deltaTime);</code></pre>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> How do you tell the CameraFollow script which object to follow?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Drag the Player into the public Target slot in the Inspector.">A) Drag the Player into the public Target slot in the Inspector</button>
+                            <button class="quiz-option" data-correct="false" data-hint="No renaming needed.">B) Rename the camera to match the player</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't guess automatically.">C) It finds the player automatically, always</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why put follow-camera code in <code>LateUpdate()</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! LateUpdate runs after all Updates, so the player has already moved.">A) It runs after the player has moved this frame, avoiding jitter</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not about running less often.">B) It runs less often to save performance</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both can read input; that's not the reason.">C) Only LateUpdate can read input</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <code>public Transform target</code> slot lets a script reference another object; assign it by dragging in the Inspector.</li>
+                        <li>Position the camera at <code>target.position + offset</code> and <code>LookAt(target)</code>.</li>
+                        <li>Camera-follow code belongs in <code>LateUpdate()</code> so it uses the player's final position.</li>
+                        <li>An empty target slot causes a NullReferenceException — always assign it.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Your player moves and the camera follows. But it walks through walls and floats free of gravity. <strong>Module 5</strong> brings in physics — Rigidbodies, colliders, and real pickups.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 4 complete!</h3>
+                    <p>A controllable player with a following camera — that's the core of countless games.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_14.html" class="prev-lesson">← Previous: Moving a Player Character</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_16.html" class="next-lesson">Next: Rigidbodies &amp; Gravity →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

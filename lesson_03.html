@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A guided tour of the Unity 6 Editor interface — the Toolbar, Hierarchy, Scene and Game views, Inspector, Project, and Console — for absolute beginners.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.3: The Unity Editor Interface — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Mermaid — initialized by course-enhancements.js for theme awareness -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+    <style>
+        /* Local helpers for the reconstructed Editor figures in this lesson */
+        .ui-figure { margin: var(--spacing-lg) 0; text-align: center; }
+        .ui-figure svg { width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.28); }
+        .ui-figure figcaption { margin-top: var(--spacing-sm); font-size: 0.9rem; color: var(--text-light); }
+        .ui-note { font-size: 0.82rem; color: var(--text-light); font-style: italic; }
+        .panel-legend { list-style: none; padding: 0; margin: var(--spacing-md) 0; }
+        .panel-legend li { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem; }
+        .panel-legend .num { flex: 0 0 auto; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--primary-color); color: #fff; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <!-- Progress indicator -->
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">
+                ☰
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1: Meet Unity</a></li>
+            <li aria-current="page">Lesson 1.3: The Unity Editor Interface</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="container">
+            <!-- Lesson Header -->
+            <header>
+                <h1>🖥️ Lesson 1.3: The Unity Editor Interface</h1>
+                <p class="lead">The Unity Editor can look overwhelming at first — panels, tabs, and buttons everywhere. In this lesson we slow right down and give you a guided tour of every part you'll use, so the whole screen starts to feel familiar.</p>
+
+                <!-- Learning objectives -->
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Name the six main areas of the Unity Editor and say what each one does</li>
+                        <li>Tell the difference between the <strong>Scene view</strong> (your workspace) and the <strong>Game view</strong> (what the player sees)</li>
+                        <li>Select an object in the <strong>Hierarchy</strong> and read its details in the <strong>Inspector</strong></li>
+                        <li>Identify the <strong>Play</strong>, <strong>Pause</strong>, and <strong>Step</strong> buttons and know what they do</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                    <p><strong>You'll need:</strong> Unity 6 installed and any project open (Lesson 1.2 covered installation). No coding yet — this lesson is all about finding your way around.</p>
+                </div>
+            </header>
+
+            <!-- Sticky Table of Contents -->
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span>
+                    <span class="toc-label">In This Lesson</span>
+                    <span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Your Workshop</a></li>
+                        <li><a href="#big-picture" class="toc-link">The Big Picture: Six Areas</a></li>
+                        <li><a href="#scene-game" class="toc-link">Scene View vs Game View</a></li>
+                        <li><a href="#hierarchy-inspector" class="toc-link">Hierarchy &amp; Inspector</a></li>
+                        <li><a href="#toolbar" class="toc-link">The Toolbar &amp; Play Controls</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on: Take the Tour</a></li>
+                        <li><a href="#best-practices" class="toc-link">Tips &amp; Best Practices</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1: Introduction -->
+            <section id="intro" class="lesson-section">
+                <h2>Your Workshop</h2>
+                <p>Think of the Unity Editor as a <strong>workshop</strong>. A carpenter's workshop has a workbench, a rack of tools, a shelf of materials, and a doorway to see the finished piece. Unity is the same — each panel is one of those stations. Once you know what each one is <em>for</em>, the clutter turns into a workspace.</p>
+                <p>Everything you see in this lesson comes from a real Unity 6 project — a small "collect the stars" scene with a robot character. Here's the actual scene, rendered straight out of Unity:</p>
+
+                <figure>
+                    <img src="images/editor-game-view.png" alt="A real Unity render: a grey robot standing on a large white grid floor under a blue sky, with yellow collectible stars and coloured cubes around it.">
+                    <figcaption>Figure 1: A real frame rendered from our example scene in Unity 6. The robot is the player; the yellow stars are collectibles. We'll build a game much like this by the end of the course.</figcaption>
+                </figure>
+
+                <blockquote>
+                    <strong>💡 Don't try to memorize everything.</strong> You will not remember all of this at once, and you don't need to. The goal is recognition — so that when we say "open the Inspector," you know roughly where to look. It becomes second nature within a few lessons.
+                </blockquote>
+            </section>
+
+            <!-- Section 2: The Big Picture -->
+            <section id="big-picture" class="lesson-section">
+                <h2>The Big Picture: Six Areas</h2>
+                <p>No matter how it's arranged, a default Unity layout has <strong>six main areas</strong>. Here's how they're laid out, with each area numbered:</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 960 600" role="img" aria-labelledby="layoutTitle layoutDesc" style="max-width:960px;">
+                        <title id="layoutTitle">Unity 6 default Editor layout</title>
+                        <desc id="layoutDesc">A diagram of the Unity Editor window divided into six labelled areas: Toolbar across the top, Hierarchy on the left, Scene and Game views in the centre, Inspector on the right, and Project and Console panels across the bottom.</desc>
+                        <!-- window background -->
+                        <rect x="0" y="0" width="960" height="600" rx="8" fill="#2b2b2b" stroke="#161616" stroke-width="2"/>
+                        <!-- Toolbar -->
+                        <rect x="8" y="8" width="944" height="44" rx="4" fill="#3c3c3c" stroke="#1e1e1e"/>
+                        <!-- play controls -->
+                        <rect x="430" y="16" width="100" height="28" rx="4" fill="#2f2f2f" stroke="#1e1e1e"/>
+                        <path d="M462 24 l10 6 l-10 6 z" fill="#4c8bf5"/>
+                        <rect x="486" y="24" width="4" height="12" fill="#c9c9c9"/><rect x="492" y="24" width="4" height="12" fill="#c9c9c9"/>
+                        <path d="M508 24 l8 6 l-8 6 z" fill="#c9c9c9"/><rect x="516" y="24" width="3" height="12" fill="#c9c9c9"/>
+                        <!-- Hierarchy -->
+                        <rect x="8" y="58" width="210" height="360" rx="4" fill="#383838" stroke="#1e1e1e"/>
+                        <rect x="8" y="58" width="210" height="22" rx="4" fill="#2d2d2d"/>
+                        <text x="18" y="73" font-family="'Segoe UI',sans-serif" font-size="12" fill="#c9c9c9">Hierarchy</text>
+                        <!-- Scene/Game viewport -->
+                        <rect x="224" y="58" width="500" height="360" rx="4" fill="#4a4a4a" stroke="#1e1e1e"/>
+                        <rect x="224" y="58" width="500" height="22" rx="4" fill="#2d2d2d"/>
+                        <text x="234" y="73" font-family="'Segoe UI',sans-serif" font-size="12" fill="#c9c9c9">Scene</text>
+                        <text x="286" y="73" font-family="'Segoe UI',sans-serif" font-size="12" fill="#8a8a8a">Game</text>
+                        <!-- fake sky/ground in viewport -->
+                        <defs>
+                            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#4fb4d8"/><stop offset="1" stop-color="#9fdbe6"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="230" y="86" width="488" height="326" rx="2" fill="url(#sky)"/>
+                        <rect x="230" y="300" width="488" height="112" fill="#e9edf0"/>
+                        <rect x="452" y="250" width="44" height="70" rx="6" fill="#9aa3ac"/>
+                        <!-- Inspector -->
+                        <rect x="730" y="58" width="222" height="360" rx="4" fill="#383838" stroke="#1e1e1e"/>
+                        <rect x="730" y="58" width="222" height="22" rx="4" fill="#2d2d2d"/>
+                        <text x="740" y="73" font-family="'Segoe UI',sans-serif" font-size="12" fill="#c9c9c9">Inspector</text>
+                        <!-- Bottom: Project + Console -->
+                        <rect x="8" y="424" width="944" height="168" rx="4" fill="#383838" stroke="#1e1e1e"/>
+                        <rect x="8" y="424" width="944" height="22" rx="4" fill="#2d2d2d"/>
+                        <text x="18" y="439" font-family="'Segoe UI',sans-serif" font-size="12" fill="#c9c9c9">Project</text>
+                        <text x="78" y="439" font-family="'Segoe UI',sans-serif" font-size="12" fill="#8a8a8a">Console</text>
+                        <!-- number badges -->
+                        <g font-family="'Segoe UI',sans-serif" font-size="16" font-weight="700" text-anchor="middle">
+                            <circle cx="405" cy="30" r="13" fill="#3b82f6"/><text x="405" y="35" fill="#fff">1</text>
+                            <circle cx="30" cy="98" r="13" fill="#3b82f6"/><text x="30" y="103" fill="#fff">2</text>
+                            <circle cx="250" cy="98" r="13" fill="#3b82f6"/><text x="250" y="103" fill="#fff">3</text>
+                            <circle cx="752" cy="98" r="13" fill="#3b82f6"/><text x="752" y="103" fill="#fff">4</text>
+                            <circle cx="30" cy="464" r="13" fill="#3b82f6"/><text x="30" y="469" fill="#fff">5</text>
+                            <circle cx="88" cy="464" r="13" fill="#3b82f6"/><text x="88" y="469" fill="#fff">6</text>
+                        </g>
+                    </svg>
+                    <figcaption>Figure 2: The default Unity 6 layout, drawn to match the real Editor. Your panels may be sized differently, but every layout has these same six areas.</figcaption>
+                </figure>
+
+                <ol class="panel-legend">
+                    <li><span class="num">1</span><span><strong>Toolbar</strong> — the strip across the top. It holds the transform tools and the all-important <strong>Play / Pause / Step</strong> buttons that start and stop your game.</span></li>
+                    <li><span class="num">2</span><span><strong>Hierarchy</strong> — a list of <em>every object currently in your scene</em>. Think of it as the cast list.</span></li>
+                    <li><span class="num">3</span><span><strong>Scene &amp; Game views</strong> — two tabs sharing one space. <strong>Scene</strong> is your 3D workbench; <strong>Game</strong> is exactly what the player will see.</span></li>
+                    <li><span class="num">4</span><span><strong>Inspector</strong> — shows all the details of whatever object you've selected, and lets you change them.</span></li>
+                    <li><span class="num">5</span><span><strong>Project</strong> — every file in your game: models, images, sounds, scripts. This is your materials shelf.</span></li>
+                    <li><span class="num">6</span><span><strong>Console</strong> — where Unity prints messages, warnings, and errors. Your early-warning system.</span></li>
+                </ol>
+
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Panel (or Window):</strong> one of the rectangular areas of the Editor, like the Hierarchy or Inspector. Panels can be dragged, resized, and docked. A saved arrangement of panels is called a <strong>Layout</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Section 3: Scene vs Game -->
+            <section id="scene-game" class="lesson-section">
+                <h2>Scene View vs Game View</h2>
+                <p>This is the single most common source of confusion for beginners, so let's make it crystal clear. They share the same space (two tabs, area ③), but they do very different jobs.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Scene view</th><th>Game view</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Your <strong>workbench</strong>. A free-floating 3D view you can fly around in.</td>
+                                <td>The <strong>final result</strong>. Shows precisely what the player's camera sees.</td>
+                            </tr>
+                            <tr>
+                                <td>You move, rotate, and place objects here.</td>
+                                <td>You watch and test the game here — it comes alive when you press Play.</td>
+                            </tr>
+                            <tr>
+                                <td>Shows helpers: grids, icons, outlines (called <em>gizmos</em>).</td>
+                                <td>Clean — no helpers, just the game.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Figure 1 at the top of this lesson is a real <strong>Game view</strong> render — it's what the player sees through the camera. In the <strong>Scene view</strong> you'd see the same robot and stars, but also grid lines, the camera's icon, and selection outlines to help you build.</p>
+
+                <blockquote>
+                    <strong>⚠️ A classic beginner moment:</strong> "I pressed Play but nothing happens / I can't see my character!" Nine times out of ten, you're looking at the <strong>Scene</strong> tab instead of the <strong>Game</strong> tab, or your camera isn't pointed at the action. Check which tab is selected first.
+                </blockquote>
+            </section>
+
+            <!-- Section 4: Hierarchy & Inspector -->
+            <section id="hierarchy-inspector" class="lesson-section">
+                <h2>Hierarchy &amp; Inspector: A Team</h2>
+                <p>The Hierarchy and the Inspector work together constantly. The rule is simple:</p>
+                <p style="text-align:center; font-size:1.1rem;"><strong>Click an object in the Hierarchy → its details appear in the Inspector.</strong></p>
+
+                <h3>The Hierarchy — everything in your scene</h3>
+                <p>Here is the actual Hierarchy from our example scene. Notice that <code>Ground</code> is selected (highlighted), and some objects have a ▶ arrow — that means they contain child objects you can expand.</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 360 430" role="img" aria-labelledby="hTitle hDesc" style="max-width:360px;">
+                        <title id="hTitle">The Hierarchy panel</title>
+                        <desc id="hDesc">The Unity Hierarchy panel listing the objects in the scene: Directional Light, Ground (selected), four coloured boxes, and collapsed groups named Collectibles, Tutorial, Postprocessing and PlayerRobot.</desc>
+                        <rect x="0" y="0" width="360" height="430" rx="6" fill="#383838" stroke="#161616"/>
+                        <!-- tab bar -->
+                        <rect x="0" y="0" width="360" height="26" rx="6" fill="#2d2d2d"/>
+                        <rect x="6" y="4" width="78" height="22" rx="4" fill="#3c3c3c"/>
+                        <text x="16" y="19" font-family="'Segoe UI',sans-serif" font-size="12" fill="#dcdcdc">Hierarchy</text>
+                        <!-- search bar -->
+                        <rect x="8" y="32" width="344" height="20" rx="3" fill="#2a2a2a" stroke="#1e1e1e"/>
+                        <text x="16" y="46" font-family="'Segoe UI',sans-serif" font-size="11" fill="#6f6f6f">🔍  Search…</text>
+                        <!-- scene root -->
+                        <text x="26" y="72" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="700" fill="#dcdcdc">GetStarted_Scene</text>
+                        <path d="M12 65 l6 4 l-6 4 z" fill="#c9c9c9"/>
+                        <!-- rows -->
+                        <g font-family="'Segoe UI',sans-serif" font-size="12" fill="#c4c4c4">
+                            <!-- Directional Light -->
+                            <rect x="26" y="82" width="10" height="10" fill="#e0c15a"/><text x="42" y="91">Directional Light</text>
+                            <!-- Ground (selected) -->
+                            <rect x="4" y="98" width="352" height="18" fill="#2c5d87"/>
+                            <rect x="26" y="102" width="10" height="10" fill="#9aa3ac"/><text x="42" y="111" fill="#ffffff">Ground</text>
+                            <!-- boxes -->
+                            <rect x="26" y="120" width="10" height="10" fill="#d9c04a"/><text x="42" y="129">01_Box_Yellow</text>
+                            <rect x="26" y="138" width="10" height="10" fill="#d38a3f"/><text x="42" y="147">02_Box_Orange</text>
+                            <rect x="26" y="156" width="10" height="10" fill="#d38a3f"/><text x="42" y="165">03_Box_Orange</text>
+                            <rect x="26" y="174" width="10" height="10" fill="#c4553f"/><text x="42" y="183">04_Box_Red</text>
+                            <!-- Collectibles (foldout) -->
+                            <path d="M14 193 l7 4 l-7 4 z" fill="#c9c9c9"/><rect x="26" y="192" width="10" height="10" fill="#7fa9d6"/><text x="42" y="201">Collectibles</text>
+                            <!-- Tutorial -->
+                            <path d="M14 211 l7 4 l-7 4 z" fill="#c9c9c9"/><rect x="26" y="210" width="10" height="10" fill="#7fa9d6"/><text x="42" y="219">Tutorial</text>
+                            <!-- Postprocessing -->
+                            <rect x="26" y="228" width="10" height="10" fill="#8f7fd6"/><text x="42" y="237">Postprocessing</text>
+                            <!-- PlayerRobot -->
+                            <path d="M14 247 l7 4 l-7 4 z" fill="#c9c9c9"/><rect x="26" y="246" width="10" height="10" fill="#5fb37f"/><text x="42" y="255" fill="#dcdcdc">PlayerRobot</text>
+                        </g>
+                        <!-- callout: foldout arrow -->
+                        <g font-family="'Segoe UI',sans-serif" font-size="10" fill="#8a8a8a">
+                            <text x="60" y="300">▶  arrow = expandable (has child objects)</text>
+                            <text x="60" y="316" fill="#7fb0e6">Blue row = the currently selected object</text>
+                        </g>
+                    </svg>
+                    <figcaption>Figure 3: The real Hierarchy of our example scene, recreated in the Editor's dark theme. <code>Ground</code> is selected.</figcaption>
+                </figure>
+
+                <h3>The Inspector — the details of one object</h3>
+                <p>With <code>Ground</code> selected, the Inspector shows what it's made of. Every object is a stack of <strong>components</strong> (we cover these properly in Module 2). For now, just notice that the Inspector lists them and shows their settings — like the exact position, rotation, and scale:</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 380 520" role="img" aria-labelledby="iTitle iDesc" style="max-width:380px;">
+                        <title id="iTitle">The Inspector panel for the Ground object</title>
+                        <desc id="iDesc">The Unity Inspector showing the Ground object with a Transform component (Position 0, -0.02, 0; Rotation 0,0,0; Scale 30,10,30), a Mesh Filter set to Cube, a Mesh Renderer using Material_WhiteGrid, and a Box Collider, plus an Add Component button.</desc>
+                        <rect x="0" y="0" width="380" height="520" rx="6" fill="#383838" stroke="#161616"/>
+                        <!-- tab -->
+                        <rect x="0" y="0" width="380" height="26" rx="6" fill="#2d2d2d"/>
+                        <rect x="6" y="4" width="72" height="22" rx="4" fill="#3c3c3c"/>
+                        <text x="16" y="19" font-family="'Segoe UI',sans-serif" font-size="12" fill="#dcdcdc">Inspector</text>
+                        <!-- object header -->
+                        <rect x="8" y="32" width="364" height="30" rx="3" fill="#424242"/>
+                        <rect x="16" y="41" width="12" height="12" rx="2" fill="#2a2a2a" stroke="#7f7f7f"/>
+                        <path d="M18 47 l3 3 l6 -6" stroke="#5fb37f" stroke-width="2" fill="none"/>
+                        <rect x="34" y="40" width="12" height="12" fill="#9aa3ac"/>
+                        <text x="52" y="51" font-family="'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#ffffff">Ground</text>
+                        <text x="300" y="51" font-family="'Segoe UI',sans-serif" font-size="11" fill="#9a9a9a">Static ▾</text>
+                        <!-- tag/layer row -->
+                        <text x="16" y="76" font-family="'Segoe UI',sans-serif" font-size="11" fill="#9a9a9a">Tag</text>
+                        <rect x="44" y="66" width="120" height="16" rx="2" fill="#2a2a2a" stroke="#1e1e1e"/>
+                        <text x="50" y="78" font-family="'Segoe UI',sans-serif" font-size="10" fill="#c4c4c4">Untagged ▾</text>
+                        <text x="180" y="76" font-family="'Segoe UI',sans-serif" font-size="11" fill="#9a9a9a">Layer</text>
+                        <rect x="214" y="66" width="120" height="16" rx="2" fill="#2a2a2a" stroke="#1e1e1e"/>
+                        <text x="220" y="78" font-family="'Segoe UI',sans-serif" font-size="10" fill="#c4c4c4">Default ▾</text>
+
+                        <!-- Transform component -->
+                        <rect x="8" y="92" width="364" height="86" rx="3" fill="#404040" stroke="#1e1e1e"/>
+                        <rect x="8" y="92" width="364" height="22" rx="3" fill="#4a4a4a"/>
+                        <path d="M18 99 l6 4 l-6 4 z" fill="#c9c9c9"/>
+                        <path d="M30 97 l8 0 l0 3 l-8 0 z M30 102 l8 0 l0 6 l-8 0 z" fill="#7fb0e6"/>
+                        <text x="44" y="107" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="600" fill="#e6e6e6">Transform</text>
+                        <g font-family="'Segoe UI',sans-serif" font-size="11">
+                            <text x="18" y="130" fill="#b8b8b8">Position</text>
+                            <text x="140" y="130" fill="#d66">X</text><rect x="150" y="121" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="156" y="131" fill="#dcdcdc">0</text>
+                            <text x="210" y="130" fill="#6c6">Y</text><rect x="220" y="121" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="226" y="131" fill="#dcdcdc">-0.02</text>
+                            <text x="280" y="130" fill="#69f">Z</text><rect x="290" y="121" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="296" y="131" fill="#dcdcdc">0</text>
+                            <text x="18" y="150" fill="#b8b8b8">Rotation</text>
+                            <text x="140" y="150" fill="#d66">X</text><rect x="150" y="141" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="156" y="151" fill="#dcdcdc">0</text>
+                            <text x="210" y="150" fill="#6c6">Y</text><rect x="220" y="141" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="226" y="151" fill="#dcdcdc">0</text>
+                            <text x="280" y="150" fill="#69f">Z</text><rect x="290" y="141" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="296" y="151" fill="#dcdcdc">0</text>
+                            <text x="18" y="170" fill="#b8b8b8">Scale</text>
+                            <text x="140" y="170" fill="#d66">X</text><rect x="150" y="161" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="156" y="171" fill="#dcdcdc">30</text>
+                            <text x="210" y="170" fill="#6c6">Y</text><rect x="220" y="161" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="226" y="171" fill="#dcdcdc">10</text>
+                            <text x="280" y="170" fill="#69f">Z</text><rect x="290" y="161" width="52" height="14" rx="2" fill="#2a2a2a"/><text x="296" y="171" fill="#dcdcdc">30</text>
+                        </g>
+
+                        <!-- Mesh Filter -->
+                        <rect x="8" y="184" width="364" height="30" rx="3" fill="#404040" stroke="#1e1e1e"/>
+                        <rect x="8" y="184" width="364" height="22" rx="3" fill="#4a4a4a"/>
+                        <path d="M18 191 l6 4 l-6 4 z" fill="#c9c9c9"/>
+                        <text x="34" y="199" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="600" fill="#e6e6e6">Mesh Filter</text>
+                        <text x="150" y="199" font-family="'Segoe UI',sans-serif" font-size="10" fill="#9a9a9a">Mesh</text>
+                        <text x="190" y="199" font-family="'Segoe UI',sans-serif" font-size="10" fill="#c4c4c4">Cube</text>
+
+                        <!-- Mesh Renderer -->
+                        <rect x="8" y="220" width="364" height="30" rx="3" fill="#404040" stroke="#1e1e1e"/>
+                        <rect x="8" y="220" width="364" height="22" rx="3" fill="#4a4a4a"/>
+                        <path d="M18 227 l6 4 l-6 4 z" fill="#c9c9c9"/>
+                        <text x="34" y="235" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="600" fill="#e6e6e6">Mesh Renderer</text>
+                        <text x="150" y="235" font-family="'Segoe UI',sans-serif" font-size="10" fill="#9a9a9a">Material</text>
+                        <text x="205" y="235" font-family="'Segoe UI',sans-serif" font-size="10" fill="#c4c4c4">Material_WhiteGrid</text>
+
+                        <!-- Box Collider -->
+                        <rect x="8" y="256" width="364" height="30" rx="3" fill="#404040" stroke="#1e1e1e"/>
+                        <rect x="8" y="256" width="364" height="22" rx="3" fill="#4a4a4a"/>
+                        <path d="M18 263 l6 4 l-6 4 z" fill="#c9c9c9"/>
+                        <rect x="32" y="261" width="11" height="11" fill="none" stroke="#7fdc7f" stroke-width="1.4"/>
+                        <text x="50" y="271" font-family="'Segoe UI',sans-serif" font-size="12" font-weight="600" fill="#e6e6e6">Box Collider</text>
+
+                        <!-- Add Component -->
+                        <rect x="96" y="300" width="188" height="26" rx="5" fill="#565656" stroke="#1e1e1e"/>
+                        <text x="190" y="317" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="12" fill="#e6e6e6">Add Component</text>
+
+                        <!-- callouts -->
+                        <g font-family="'Segoe UI',sans-serif" font-size="10" fill="#8a8a8a">
+                            <text x="16" y="360">Each grey bar is one Component.</text>
+                            <text x="16" y="376">X = red, Y = green, Z = blue — the three axes of 3D space.</text>
+                            <text x="16" y="392">These are the object's real values, straight from the project.</text>
+                        </g>
+                    </svg>
+                    <figcaption>Figure 4: The Inspector for <code>Ground</code>. Its real values: a Cube mesh scaled to 30 × 10 × 30 with a white-grid material and a Box Collider — that's the floor you saw in Figure 1.</figcaption>
+                </figure>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>The little coloured letters <span style="color:#c0392b;font-weight:700;">X</span> <span style="color:#27ae60;font-weight:700;">Y</span> <span style="color:#2980b9;font-weight:700;">Z</span> are used <em>everywhere</em> in Unity for the three directions in 3D space. Red = left/right, Green = up/down, Blue = forward/back. Learning this colour code now will pay off in every later lesson.</p>
+                </div>
+            </section>
+
+            <!-- Section 5: Toolbar -->
+            <section id="toolbar" class="lesson-section">
+                <h2>The Toolbar &amp; Play Controls</h2>
+                <p>In the centre of the Toolbar are three buttons that control your game. These are the ones you'll press thousands of times:</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 520 150" role="img" aria-labelledby="tTitle tDesc" style="max-width:520px;">
+                        <title id="tTitle">The Play, Pause, and Step buttons</title>
+                        <desc id="tDesc">A close-up of the three central Toolbar buttons: a triangular Play button, a double-bar Pause button, and a Step button, with labels explaining each.</desc>
+                        <rect x="0" y="0" width="520" height="150" rx="6" fill="#2b2b2b" stroke="#161616"/>
+                        <rect x="160" y="20" width="200" height="40" rx="6" fill="#3c3c3c" stroke="#1e1e1e"/>
+                        <!-- Play -->
+                        <path d="M205 30 l18 10 l-18 10 z" fill="#4c8bf5"/>
+                        <!-- Pause -->
+                        <rect x="252" y="30" width="6" height="20" fill="#d2d2d2"/><rect x="262" y="30" width="6" height="20" fill="#d2d2d2"/>
+                        <!-- Step -->
+                        <path d="M300 30 l14 10 l-14 10 z" fill="#d2d2d2"/><rect x="316" y="30" width="5" height="20" fill="#d2d2d2"/>
+                        <!-- labels -->
+                        <g font-family="'Segoe UI',sans-serif" font-size="12" fill="#c4c4c4" text-anchor="middle">
+                            <line x1="214" y1="64" x2="214" y2="84" stroke="#666"/><text x="214" y="100" font-weight="700" fill="#4c8bf5">Play</text><text x="214" y="116" font-size="10">start / stop</text>
+                            <line x1="257" y1="64" x2="257" y2="84" stroke="#666"/><text x="257" y="130" font-weight="700">Pause</text><text x="257" y="146" font-size="10">freeze</text>
+                            <line x1="309" y1="64" x2="309" y2="84" stroke="#666"/><text x="309" y="100" font-weight="700">Step</text><text x="309" y="116" font-size="10">one frame</text>
+                        </g>
+                    </svg>
+                    <figcaption>Figure 5: The Play, Pause, and Step buttons, centred in the Toolbar.</figcaption>
+                </figure>
+
+                <ul>
+                    <li><strong>▶ Play</strong> — starts your game inside the Editor. Press it again to stop. The whole Editor tints slightly to remind you you're in <em>Play mode</em>.</li>
+                    <li><strong>❚❚ Pause</strong> — freezes the running game so you can inspect it mid-action.</li>
+                    <li><strong>▶❘ Step</strong> — while paused, advances the game by a single frame. Great for studying fast events.</li>
+                </ul>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Watch Out: the #1 beginner trap</h4>
+                    <p>Any changes you make to objects <strong>while in Play mode are thrown away</strong> the moment you press Stop. It's a safe sandbox to test in — but if you carefully position something during Play, it will snap back when you stop. Always exit Play mode before doing real work. (Unity's Play-mode tint is your reminder.)</p>
+                </div>
+            </section>
+
+            <!-- Section 6: Hands-on Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on: Take the Tour</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Find every panel</h3>
+                    <p><strong>Objective:</strong> Build muscle memory for where things live. Open any Unity project (an empty one is fine) and locate each area.</p>
+                    <h4>Instructions:</h4>
+                    <ol>
+                        <li>Find the <strong>Hierarchy</strong> on the left. How many objects are listed? (A brand-new scene usually has a <code>Main Camera</code> and a <code>Directional Light</code>.)</li>
+                        <li>Click the <strong>Scene</strong> tab, then the <strong>Game</strong> tab. Watch how the view changes from workbench to player's-eye.</li>
+                        <li>Click any object in the Hierarchy and watch the <strong>Inspector</strong> on the right fill up with its details.</li>
+                        <li>Find the <strong>Project</strong> panel at the bottom. Click a folder to see its contents.</li>
+                        <li>Find the <strong>Console</strong> tab next to Project. It may be empty — that's good, it means no errors.</li>
+                        <li>Locate the <strong>Play</strong> button at the top-centre. Don't press it yet — just find it.</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint: I can't find a panel!</summary>
+                        <p>Any panel can be reopened from the top menu: <strong>Window ▸ General</strong>, then choose <em>Hierarchy</em>, <em>Inspector</em>, <em>Console</em>, etc. If your layout looks messy, reset it with <strong>Window ▸ Layouts ▸ Default</strong>.</p>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Selection detective</h3>
+                    <p><strong>Objective:</strong> Confirm the Hierarchy → Inspector connection.</p>
+                    <ol>
+                        <li>Click the <code>Main Camera</code> in the Hierarchy.</li>
+                        <li>In the Inspector, find its <strong>Transform</strong> and read the three <strong>Position</strong> numbers (X, Y, Z).</li>
+                        <li>Now click the <code>Directional Light</code>. Notice the Inspector completely changes to show <em>its</em> components instead.</li>
+                    </ol>
+                    <details>
+                        <summary>✅ What you should have seen</summary>
+                        <p>The Inspector always shows <strong>one selected object at a time</strong>. Selecting a new object in the Hierarchy instantly swaps the Inspector's contents. The camera has a <em>Camera</em> component; the light has a <em>Light</em> component — different jobs, different components.</p>
+                    </details>
+                </div>
+
+                <!-- Quiz Section -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which panel shows a list of every object currently in your scene?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That panel shows files, not scene objects.">A) The Project panel</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The Hierarchy is the list of objects in the current scene.">B) The Hierarchy</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That panel shows details of ONE selected object.">C) The Inspector</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> You want to see exactly what the player will see. Which view do you look at?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's your free-floating workbench.">A) The Scene view</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The Game view shows the player's camera output.">B) The Game view</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That lists messages and errors.">C) The Console</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> You made changes while the game was running (Play mode) and they vanished when you stopped. Why?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Unity didn't crash — this is expected behaviour.">A) Unity crashed and lost them</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Changes made during Play mode are intentionally discarded when you stop.">B) Changes made in Play mode are discarded on Stop</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Saving wouldn't keep Play-mode changes either.">C) I forgot to save the scene</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Best Practices -->
+            <section id="best-practices" class="lesson-section">
+                <h2>Tips &amp; Best Practices</h2>
+
+                <h3>✅ Do's</h3>
+                <ul>
+                    <li><strong>Reset your layout when lost.</strong> <em>Window ▸ Layouts ▸ Default</em> instantly restores the standard arrangement.</li>
+                    <li><strong>Keep the Console visible.</strong> It's how Unity talks to you — catching errors early saves hours.</li>
+                    <li><strong>Get used to the Scene/Game tabs.</strong> Glance at which one is active before you panic that "nothing works."</li>
+                </ul>
+
+                <h3>❌ Don'ts</h3>
+                <ul>
+                    <li><strong>Don't do careful work in Play mode.</strong> Remember: it resets on Stop.</li>
+                    <li><strong>Don't worry about memorizing components yet.</strong> We unpack them properly in Module 2.</li>
+                    <li><strong>Don't fight the layout.</strong> You can drag panels around later; for now the default is perfect for learning.</li>
+                </ul>
+
+                <h3>💡 Pro Tips</h3>
+                <ul>
+                    <li>Hover over almost any field or button and Unity shows a <strong>tooltip</strong> explaining it.</li>
+                    <li>You can <strong>double-click an object</strong> in the Hierarchy to instantly frame it in the Scene view.</li>
+                    <li>Panels are <strong>tabs</strong> — drag a tab out to float it, or onto another to dock it. Handy on big monitors.</li>
+                </ul>
+            </section>
+
+            <!-- Section 8: Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>The Editor has <strong>six main areas</strong>: Toolbar, Hierarchy, Scene/Game, Inspector, Project, Console.</li>
+                        <li><strong>Scene view</strong> is your workbench; <strong>Game view</strong> is the player's view.</li>
+                        <li>Select in the <strong>Hierarchy</strong> → edit in the <strong>Inspector</strong>. Objects are made of <strong>components</strong>.</li>
+                        <li><strong>Play</strong> runs the game; changes made during Play are discarded on Stop.</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Go Deeper (optional)</h3>
+                <ul>
+                    <li><a href="https://docs.unity3d.com/Manual/UsingTheEditor.html" target="_blank" rel="noopener">Unity Manual — Using the Unity Editor</a></li>
+                    <li><a href="https://docs.unity3d.com/Manual/CustomizingYourWorkspace.html" target="_blank" rel="noopener">Unity Manual — Customizing your workspace &amp; layouts</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can find your way around, it's time to <em>make</em> something. In <strong>Lesson 1.4</strong> you'll create a brand-new scene from scratch, add your first object, and save your work.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Nicely done!</h3>
+                    <p>The Editor used to look like a cockpit — now it's a workshop you recognize. That's a real milestone.</p>
+                </div>
+            </section>
+
+            <!-- Lesson Navigation -->
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_02.html" class="prev-lesson">← Previous: Installing Unity Hub &amp; Unity 6</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_04.html" class="next-lesson">Next: Creating &amp; Saving Your First Scene →</a>
+            </nav>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

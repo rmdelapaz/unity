@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add audio to your game: an AudioSource for background music and PlayOneShot for collectible sound effects.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.3: Adding Sound &amp; Music — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6: UI &amp; Feedback</a></li>
+            <li aria-current="page">Lesson 6.3: Adding Sound &amp; Music</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔊 Lesson 6.3: Adding Sound &amp; Music</h1>
+                <p class="lead">Sound is half the feel of a game. A cheerful <em>ding</em> when you collect a star, a gentle background loop — both are quick to add in Unity with the <strong>Audio Source</strong> component.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Understand <strong>Audio Source</strong> and <strong>Audio Clip</strong></li>
+                        <li>Play looping background music</li>
+                        <li>Play a one-shot sound effect on an event (like collecting)</li>
+                        <li>Know why the Main Camera usually holds an Audio Listener</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#pieces" class="toc-link">The Audio Pieces</a></li>
+                    <li><a href="#music" class="toc-link">Background Music</a></li>
+                    <li><a href="#sfx" class="toc-link">A Collect Sound Effect</a></li>
+                    <li><a href="#clips" class="toc-link">Getting Audio Clips</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="pieces" class="lesson-section">
+                <h2>The Audio Pieces</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Piece</th><th>What it is</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Audio Clip</strong></td><td>An imported sound file (.wav, .mp3, .ogg) — an asset in your Project.</td></tr>
+                            <tr><td><strong>Audio Source</strong></td><td>A component that <em>plays</em> a clip from a GameObject.</td></tr>
+                            <tr><td><strong>Audio Listener</strong></td><td>The "ears" — one lives on the Main Camera by default. Don't add extras.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 Import a sound</strong> by dragging an audio file into the Project panel. It becomes an Audio Clip you can drop into any Audio Source.</blockquote>
+            </section>
+
+            <section id="music" class="lesson-section">
+                <h2>Background Music</h2>
+                <p>Music is the simplest case — an Audio Source that plays on start and loops. No code needed:</p>
+                <ol>
+                    <li>Create an empty GameObject named <code>Music</code>.</li>
+                    <li><strong>Add Component ▸ Audio Source</strong>.</li>
+                    <li>Drag your music clip into the <strong>AudioClip</strong> field.</li>
+                    <li>Tick <strong>Play On Awake</strong> and <strong>Loop</strong>. Lower the <strong>Volume</strong> a little (music should sit under the action).</li>
+                </ol>
+                <p>Press Play — music plays and repeats. That's it.</p>
+            </section>
+
+            <section id="sfx" class="lesson-section">
+                <h2>A Collect Sound Effect</h2>
+                <p>Sound effects fire on an <em>event</em>, so we trigger them from code with <code>PlayOneShot</code>. Add an Audio Source to the GameManager (leave Play On Awake <em>off</em>), then:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+using TMPro;
+
+public class GameManager : MonoBehaviour
+{
+    public TMP_Text scoreText;
+    public AudioClip collectSound;   // drag a 'ding' clip here
+    private AudioSource audioSource;
+    private int score = 0;
+
+    void Start()
+    {
+        audioSource = GetComponent&lt;AudioSource&gt;();
+        UpdateScoreText();
+    }
+
+    public void AddPoint()
+    {
+        score++;
+        UpdateScoreText();
+
+        // play the collect sound once
+        if (collectSound != null)
+            audioSource.PlayOneShot(collectSound);
+    }
+
+    void UpdateScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
+}</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>PlayOneShot(clip):</strong> plays a clip once, layered over anything else the source is doing. Ideal for short effects like pickups and clicks — you can fire many rapidly without cutting each other off.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ No sound?</h4>
+                    <p>Check: the GameManager has an <strong>Audio Source</strong> component; the <strong>collectSound</strong> clip is assigned; your system volume isn't muted; and there's exactly one <strong>Audio Listener</strong> (on the Main Camera).</p>
+                </div>
+            </section>
+
+            <section id="clips" class="lesson-section">
+                <h2>Getting Audio Clips</h2>
+                <p>You need actual sound files. Good sources for free, licensed audio:</p>
+                <ul>
+                    <li>The <strong>Unity Asset Store</strong> (filter by free) has sound-effect and music packs.</li>
+                    <li>Sites like <a href="https://freesound.org/" target="_blank" rel="noopener">freesound.org</a> and <a href="https://opengameart.org/" target="_blank" rel="noopener">opengameart.org</a> offer free clips (always check the licence).</li>
+                    <li>Short <code>.wav</code> files work great for effects; <code>.ogg</code> or <code>.mp3</code> for longer music.</li>
+                </ul>
+                <blockquote><strong>💡 Always check the licence</strong> before shipping a game with someone else's audio. "Free to download" isn't always "free to use in a released game" — look for CC0 or clearly permissive licences.</blockquote>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Ding!</h3>
+                    <ol>
+                        <li>Import a short "ding" sound and a looping music track (any free clips).</li>
+                        <li>Set up looping background music on a <code>Music</code> object (Play On Awake + Loop).</li>
+                        <li>Add an Audio Source to the GameManager and assign the ding to <strong>collectSound</strong>.</li>
+                        <li>Play and collect stars — each one dings while the music loops underneath.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Only music plays, no ding</summary>
+                        <p>The collectSound clip probably isn't assigned, or the GameManager has no Audio Source. Check both. Also confirm <code>AddPoint()</code> is actually being called (add a Debug.Log).</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which method plays a short sound effect once, without interrupting other audio?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! PlayOneShot is ideal for layered one-off effects.">A) PlayOneShot</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Debug.Log prints text.">B) Debug.Log</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Destroy removes objects.">C) Destroy</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> For looping background music, which two Audio Source options do you tick?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Play On Awake + Loop.">A) Play On Awake and Loop</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no such pair.">B) Gravity and Mass</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Is Trigger is for colliders.">C) Is Trigger and Mute</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>An <strong>Audio Clip</strong> is the sound file; an <strong>Audio Source</strong> plays it; the <strong>Audio Listener</strong> (on the camera) hears it.</li>
+                        <li>Background music = Audio Source with <strong>Play On Awake</strong> + <strong>Loop</strong>, no code.</li>
+                        <li>Sound effects = <code>audioSource.PlayOneShot(clip)</code> fired from an event.</li>
+                        <li>Use free, correctly-licensed clips; check the licence before releasing.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You now have every building block — movement, physics, pickups, UI, sound. <strong>Module 7</strong> assembles them into a complete, playable mini-game.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 6 complete!</h3>
+                    <p>Your game looks and sounds alive. Time to put it all together.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_21.html" class="prev-lesson">← Previous: A Live Score Counter</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_23.html" class="next-lesson">Next: Planning Your Mini-Game →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

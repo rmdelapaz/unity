@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add game feel: a particle burst when collecting, and post-processing (Bloom, Vignette) via a URP Volume to make the whole game look richer.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.4: Adding Polish — Particles &amp; Post-Processing — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7: Mini-Game Project</a></li>
+            <li aria-current="page">Lesson 7.4: Adding Polish</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>✨ Lesson 7.4: Adding Polish — Particles &amp; Post-Processing</h1>
+                <p class="lead">The difference between "a tech demo" and "a game" is often <em>juice</em> — the little bursts, glows, and effects that make actions feel great. Let's add a particle pop on collect and give the whole scene a richer look with post-processing.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Create a <strong>Particle System</strong> and play a burst on an event</li>
+                        <li>Spawn an effect with <code>Instantiate</code> when a star is collected</li>
+                        <li>Add a URP <strong>Volume</strong> with <strong>Bloom</strong> and <strong>Vignette</strong></li>
+                        <li>Understand why post-processing lifts the whole look</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#juice" class="toc-link">What Is "Juice"?</a></li>
+                    <li><a href="#particles" class="toc-link">A Collect Particle Burst</a></li>
+                    <li><a href="#spawn" class="toc-link">Spawning It on Collect</a></li>
+                    <li><a href="#post" class="toc-link">Post-Processing with a Volume</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="juice" class="lesson-section">
+                <h2>What Is "Juice"?</h2>
+                <p><strong>Juice</strong> is the collection of small, non-essential feedback effects that make a game feel responsive and alive — a sparkle when you grab a coin, a screen that gently glows, a little sound. None of it changes the rules; all of it changes the <em>feel</em>. Our arena already looks tidy; polish makes it pop:</p>
+                <figure>
+                    <img src="images/level.png" alt="A real Unity render of the mini-game arena with player and collectible stars.">
+                    <figcaption>Figure 1: The arena (real render). We'll add sparkle bursts on pickup and a subtle post-processing glow over everything.</figcaption>
+                </figure>
+            </section>
+
+            <section id="particles" class="lesson-section">
+                <h2>A Collect Particle Burst</h2>
+                <p>A <strong>Particle System</strong> spawns lots of tiny sprites — sparks, smoke, confetti. We'll make a quick one-shot burst:</p>
+                <ol>
+                    <li>Add one via <strong>GameObject ▸ Effects ▸ Particle System</strong>.</li>
+                    <li>In the Inspector, set the main module's <strong>Duration</strong> ≈ 0.5, untick <strong>Looping</strong>, and set <strong>Start Lifetime</strong> ≈ 0.5.</li>
+                    <li>Open the <strong>Emission</strong> module → add a <strong>Burst</strong> of ~20 particles at time 0.</li>
+                    <li>Set <strong>Shape</strong> to Sphere and give <strong>Start Color</strong> a bright yellow.</li>
+                    <li>Save it as a <strong>prefab</strong> named <code>CollectFX</code>.</li>
+                </ol>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Particle System:</strong> a component that emits and animates many small particles at once — ideal for sparks, dust, fire, magic, and pickup bursts. A non-looping one with a burst makes a perfect one-shot effect.</p>
+                </div>
+            </section>
+
+            <section id="spawn" class="lesson-section">
+                <h2>Spawning It on Collect</h2>
+                <p>When a star is collected, create the effect at the star's position with <code>Instantiate</code>, just before destroying the star:</p>
+                <pre><code class="language-csharp">public GameObject collectFX;    // drag the CollectFX prefab here
+
+void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Player"))
+    {
+        // spawn the burst where the star was
+        if (collectFX != null)
+            Instantiate(collectFX, transform.position, Quaternion.identity);
+
+        GameManager gm = FindObjectOfType&lt;GameManager&gt;();
+        if (gm != null) gm.AddPoint();
+
+        Destroy(gameObject);
+    }
+}</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Instantiate(prefab, position, rotation):</strong> creates a fresh copy of a prefab in the scene at runtime. It's how games spawn bullets, enemies, effects — anything that appears while playing.</p>
+                </div>
+                <blockquote><strong>💡 Self-cleaning effects:</strong> tick <em>Stop Action → Destroy</em> on the Particle System (or add a tiny script that Destroys it after a second) so spent bursts don't pile up in the Hierarchy.</blockquote>
+            </section>
+
+            <section id="post" class="lesson-section">
+                <h2>Post-Processing with a Volume</h2>
+                <p><strong>Post-processing</strong> applies full-screen image effects after the scene is rendered — like Instagram filters for your game. In URP it lives on a <strong>Volume</strong>:</p>
+                <ol>
+                    <li>Add <strong>GameObject ▸ Volume ▸ Global Volume</strong>.</li>
+                    <li>On its Volume component, click <strong>New</strong> to create a Profile.</li>
+                    <li>Click <strong>Add Override</strong> and add <strong>Bloom</strong> — enable <em>Intensity</em> (~0.5) so bright things gently glow.</li>
+                    <li>Add another override, <strong>Vignette</strong> — a subtle dark edge that focuses the eye (Intensity ~0.3).</li>
+                    <li>Make sure the Main Camera has <strong>Post Processing</strong> ticked (in its Camera component).</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Nothing changed?</h4>
+                    <p>Two usual causes: the camera's <strong>Post Processing</strong> checkbox is off, or the Volume isn't <strong>Global</strong> (a local volume only affects the camera inside its collider). Tick Post Processing and use a Global volume.</p>
+                </div>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: subtle wins</h4>
+                    <p>Post-processing is easy to overdo. A little Bloom and Vignette lifts a scene; too much drowns it. Nudge values gently and compare with the effect on and off.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Make it pop</h3>
+                    <ol>
+                        <li>Build the <code>CollectFX</code> burst prefab.</li>
+                        <li>Wire it into the Collectible's <code>collectFX</code> slot and confirm a burst appears on pickup.</li>
+                        <li>Add a Global Volume with <strong>Bloom</strong> and <strong>Vignette</strong>; enable Post Processing on the camera.</li>
+                        <li>Play with the effects on, then temporarily disable the Volume to feel the difference.</li>
+                        <li>Combine with the collect <em>sound</em> from Module 6 — burst + ding together feels fantastic.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 No burst appears</summary>
+                        <p>Check the <code>collectFX</code> prefab is assigned on the collectible, that its Particle System has a Burst (not just looping emission), and that it isn't destroyed before it plays.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>Instantiate</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It creates a copy of a prefab in the scene at runtime.">A) Creates a copy of a prefab in the scene while the game runs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Destroy removes objects.">B) Removes an object</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't pause anything.">C) Pauses the game</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Post-processing (Bloom, Vignette) in URP is added via a…</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A Volume with a profile of overrides.">A) Volume with a profile of overrides</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Rigidbody is physics.">B) Rigidbody</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Canvas is for UI.">C) Canvas</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Juice</strong> = small feedback effects that make actions feel great.</li>
+                        <li>A non-looping <strong>Particle System</strong> with a burst makes a one-shot pickup effect.</li>
+                        <li><code>Instantiate</code> spawns a prefab at runtime — spawn the burst on collect.</li>
+                        <li>A URP <strong>Volume</strong> with <strong>Bloom</strong> + <strong>Vignette</strong> lifts the whole look (camera Post Processing on).</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Your mini-game is complete and juicy! In <strong>Module 8</strong> we tidy the project and — the big moment — build it into a real game file you can share.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 7 complete — you built a game!</h3>
+                    <p>Level, player, pickups, score, win/lose, particles, and glow. That's a full game loop.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_25.html" class="prev-lesson">← Previous: Win &amp; Lose Conditions</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_27.html" class="next-lesson">Next: Organizing Your Project →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

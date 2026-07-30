@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Read the Unity Console to find and fix errors. Learn Debug.Log, warnings vs errors, and how to decode the most common beginner error messages.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.4: Debugging with the Console — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+    <style>
+        .ui-figure { margin: var(--spacing-lg) 0; text-align: center; }
+        .ui-figure svg { width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.28); }
+        .ui-figure figcaption { margin-top: var(--spacing-sm); font-size: 0.9rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3: C# Scripting Basics</a></li>
+            <li aria-current="page">Lesson 3.4: Debugging with the Console</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🐞 Lesson 3.4: Debugging with the Console</h1>
+                <p class="lead">Every developer writes code that breaks — constantly. The skill isn't avoiding errors, it's <em>reading</em> them. The Console is where Unity tells you exactly what went wrong. Let's learn to listen.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Open and read the <strong>Console</strong> window</li>
+                        <li>Tell apart <strong>logs</strong>, <strong>warnings</strong>, and <strong>errors</strong></li>
+                        <li>Use <code>Debug.Log</code> to inspect what your code is doing</li>
+                        <li>Decode and fix the most common beginner errors</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#console" class="toc-link">Meet the Console</a></li>
+                    <li><a href="#three" class="toc-link">Logs, Warnings, Errors</a></li>
+                    <li><a href="#print" class="toc-link">Debugging with Debug.Log</a></li>
+                    <li><a href="#common" class="toc-link">Common Beginner Errors</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="console" class="lesson-section">
+                <h2>Meet the Console</h2>
+                <p>Open it via <strong>Window ▸ General ▸ Console</strong> (or click the Console tab next to Project). Here's what it looks like with a log, a warning, and an error:</p>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 700 250" role="img" aria-labelledby="conTitle conDesc" style="max-width:700px;">
+                        <title id="conTitle">The Unity Console window</title>
+                        <desc id="conDesc">A recreation of the Console showing a toolbar with Clear and Collapse buttons and counts of 1 log, 1 warning, 1 error, followed by three rows: an info log, a yellow warning, and a red NullReferenceException error.</desc>
+                        <rect x="0" y="0" width="700" height="250" rx="6" fill="#383838" stroke="#161616"/>
+                        <!-- tab -->
+                        <rect x="0" y="0" width="700" height="26" rx="6" fill="#2d2d2d"/>
+                        <rect x="6" y="4" width="70" height="22" rx="4" fill="#3c3c3c"/>
+                        <text x="18" y="19" font-family="'Segoe UI',sans-serif" font-size="12" fill="#dcdcdc">Console</text>
+                        <!-- toolbar -->
+                        <rect x="0" y="26" width="700" height="26" fill="#333333"/>
+                        <rect x="8" y="30" width="52" height="18" rx="3" fill="#4a4a4a"/><text x="16" y="43" font-family="'Segoe UI',sans-serif" font-size="11" fill="#d2d2d2">Clear ▾</text>
+                        <rect x="66" y="30" width="60" height="18" rx="3" fill="#4a4a4a"/><text x="74" y="43" font-family="'Segoe UI',sans-serif" font-size="11" fill="#d2d2d2">Collapse</text>
+                        <!-- counters -->
+                        <text x="560" y="43" font-family="'Segoe UI',sans-serif" font-size="12" fill="#cfcfcf">ⓘ 1</text>
+                        <text x="605" y="43" font-family="'Segoe UI',sans-serif" font-size="12" fill="#e0c15a">⚠ 1</text>
+                        <text x="650" y="43" font-family="'Segoe UI',sans-serif" font-size="12" fill="#e06c6c">⛔ 1</text>
+                        <!-- rows -->
+                        <!-- log -->
+                        <rect x="0" y="58" width="700" height="40" fill="#3c3c3c"/>
+                        <circle cx="20" cy="78" r="7" fill="#8fbce6"/><text x="17" y="82" font-family="'Segoe UI',sans-serif" font-size="11" fill="#1b1b1b">i</text>
+                        <text x="40" y="82" font-family="'Segoe UI',sans-serif" font-size="13" fill="#dcdcdc">Speed is 12</text>
+                        <!-- warning -->
+                        <rect x="0" y="100" width="700" height="40" fill="#3a3a34"/>
+                        <path d="M13 90 l7 12 l-14 0 z" transform="translate(0,32)" fill="#e0c15a"/>
+                        <text x="40" y="124" font-family="'Segoe UI',sans-serif" font-size="13" fill="#e8d79a">Enemy prefab not assigned — using default.</text>
+                        <!-- error -->
+                        <rect x="0" y="142" width="700" height="58" fill="#3d3232"/>
+                        <circle cx="20" cy="162" r="8" fill="#e06c6c"/><text x="16" y="166" font-family="'Segoe UI',sans-serif" font-size="12" fill="#2a1414">!</text>
+                        <text x="40" y="160" font-family="'Segoe UI',sans-serif" font-size="13" fill="#f0a0a0">NullReferenceException: Object reference not set to an instance of an object</text>
+                        <text x="40" y="180" font-family="'Segoe UI',sans-serif" font-size="11" fill="#c88">PlayerMovement.Update () (at Assets/Scripts/PlayerMovement.cs:17)</text>
+                    </svg>
+                    <figcaption>Figure 1: The Console (recreated). Note the counts top-right — 1 log, 1 warning, 1 error — and the file/line at the end of the error: <code>PlayerMovement.cs:17</code>.</figcaption>
+                </figure>
+            </section>
+
+            <section id="three" class="lesson-section">
+                <h2>Logs, Warnings, Errors</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Type</th><th>Colour / icon</th><th>Meaning</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Log</strong></td><td>Grey ⓘ</td><td>Information you (or Unity) printed. Harmless.</td></tr>
+                            <tr><td><strong>Warning</strong></td><td>Yellow ⚠</td><td>"This might be a problem." The game still runs.</td></tr>
+                            <tr><td><strong>Error</strong></td><td>Red ⛔</td><td>Something broke. Often stops that code from working. Fix these first.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 Double-click an error</strong> and Unity jumps straight to the offending line in your code editor. The <code>...cs:17</code> at the end of the message is the file and line number — your treasure map.</blockquote>
+            </section>
+
+            <section id="print" class="lesson-section">
+                <h2>Debugging with Debug.Log</h2>
+                <p>When code misbehaves but doesn't error, sprinkle in <code>Debug.Log</code> to see what's really happening — the values, and whether a line even runs:</p>
+                <pre><code class="language-csharp">void Update()
+{
+    Debug.Log("Update is running. Speed = " + speed);
+
+    if (speed > 10f)
+    {
+        Debug.Log("Speed is high!");
+    }
+}</code></pre>
+                <p>If "Update is running" never prints, the script isn't attached or the object is inactive. If "Speed is high!" never prints, <code>speed</code> isn't above 10. This "print and check" habit solves most beginner mysteries.</p>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Combine text and values with <code>+</code>: <code>Debug.Log("Score: " + score)</code>. Seeing the actual number is far faster than guessing.</p>
+                </div>
+            </section>
+
+            <section id="common" class="lesson-section">
+                <h2>Common Beginner Errors (and Fixes)</h2>
+                <div class="card card-warning">
+                    <h4>⚠️ NullReferenceException</h4>
+                    <p><em>"Object reference not set to an instance of an object."</em> You tried to use something that isn't there (a variable you never assigned). Check the line in the message — did you forget to drag an object into a public slot in the Inspector?</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ "; expected" or "} expected"</h4>
+                    <p>A typo — a missing semicolon or a mismatched curly brace. Go to the file and line shown and look just <em>before</em> it.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ "cannot convert double to float"</h4>
+                    <p>You wrote a decimal without the <code>f</code>. Change <code>5.0</code> to <code>5.0f</code>.</p>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ The script won't attach / "can't add script"</h4>
+                    <p>The file name and class name don't match, or the file has a compile error. Fix the red errors in the Console first — nothing works until the code compiles cleanly.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Break it on purpose</h3>
+                    <ol>
+                        <li>In any script, delete a semicolon and save. Watch the red error appear in the Console — read the file and line.</li>
+                        <li>Double-click the error; Unity opens your editor at the exact spot. Fix it.</li>
+                        <li>Add <code>Debug.Log("reached here");</code> at the top of <code>Update()</code>, press Play, and confirm it prints every frame.</li>
+                    </ol>
+                    <details>
+                        <summary>✅ What this teaches</summary>
+                        <p>Errors aren't scary once you know they point to a file and line. Reading the message and jumping to the line is 90% of debugging.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which Console message type means "something broke, fix it first"?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Logs are just information.">A) Log (grey)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Warnings still let the game run.">B) Warning (yellow)</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Red errors need fixing first.">C) Error (red)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> An error ends with <code>PlayerMovement.cs:17</code>. What is 17?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It's the line number where the problem occurred.">A) The line number in that file</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not a count of errors.">B) The number of errors</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not a version number.">C) The Unity version</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>The <strong>Console</strong> shows logs (grey), warnings (yellow), and errors (red).</li>
+                        <li>Fix red <strong>errors</strong> first — nothing runs until the code compiles.</li>
+                        <li>The file:line at the end of an error is where to look; double-click to jump there.</li>
+                        <li><strong>Debug.Log</strong> is your flashlight for seeing values and whether code runs.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You can write, run, and debug scripts. Now let's put the player in control. <strong>Module 4</strong> is all about reading input and moving a character.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 3 complete!</h3>
+                    <p>You can code — and, just as importantly, fix code. That's a real developer skill.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_11.html" class="prev-lesson">← Previous: Moving Objects with Code</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_13.html" class="next-lesson">Next: Reading Player Input →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build a live score: a GameManager that tracks points and updates a TextMeshPro label as the player collects items.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.2: A Live Score Counter — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+    <style>
+        .game-shot { position: relative; max-width: 820px; margin: var(--spacing-lg) auto; }
+        .game-shot img { display:block; width:100%; border-radius: 8px; }
+        .hud { position:absolute; color:#fff; font-family:'Segoe UI',system-ui,sans-serif; text-shadow:0 2px 6px rgba(0,0,0,.6); font-weight:700; }
+        .hud-score { top:4%; left:3%; font-size: clamp(1rem, 3.2vw, 1.8rem); }
+        figcaption.shot-cap { text-align:center; margin-top:.6rem; font-size:.9rem; color:var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6: UI &amp; Feedback</a></li>
+            <li aria-current="page">Lesson 6.2: A Live Score Counter</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔢 Lesson 6.2: A Live Score Counter</h1>
+                <p class="lead">Now we connect the pieces: collecting an item adds a point, and a <strong>GameManager</strong> keeps the total and updates the on-screen text. This is the moment your game starts to feel like a game.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Create a <strong>GameManager</strong> to hold the score</li>
+                        <li>Update a <strong>TextMeshPro</strong> label from code</li>
+                        <li>Reference the GameManager from the collectible to add points</li>
+                        <li>Understand a simple way for scripts to talk to each other</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#goal" class="toc-link">The Goal</a></li>
+                    <li><a href="#manager" class="toc-link">The GameManager</a></li>
+                    <li><a href="#wire" class="toc-link">Wiring the Collectible</a></li>
+                    <li><a href="#connect" class="toc-link">How Scripts Talk</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="goal" class="lesson-section">
+                <h2>The Goal</h2>
+                <p>Every time the player collects a star, the score ticks up and the HUD shows the new total — live:</p>
+                <figure class="game-shot">
+                    <img src="images/player.png" alt="A real Unity render of the game with a live score reading Score: 3 in the corner.">
+                    <span class="hud hud-score">⭐ Score: 3</span>
+                    <figcaption class="shot-cap">Figure 1: A live score over a real render. Collect a star → this number goes up.</figcaption>
+                </figure>
+            </section>
+
+            <section id="manager" class="lesson-section">
+                <h2>The GameManager</h2>
+                <p>A <strong>GameManager</strong> is a single object that owns game-wide data like the score. Create an empty GameObject named <code>GameManager</code> and attach this script:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+using TMPro;               // needed for TextMeshPro
+
+public class GameManager : MonoBehaviour
+{
+    public TMP_Text scoreText;   // drag the HUD text here in the Inspector
+    private int score = 0;
+
+    void Start()
+    {
+        UpdateScoreText();
+    }
+
+    public void AddPoint()
+    {
+        score = score + 1;
+        UpdateScoreText();
+    }
+
+    void UpdateScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
+}</code></pre>
+                <ul>
+                    <li><code>using TMPro;</code> unlocks the TextMeshPro types.</li>
+                    <li><code>public TMP_Text scoreText;</code> is a slot — drag your HUD text object into it in the Inspector.</li>
+                    <li><code>AddPoint()</code> is <strong>public</strong> so the collectible can call it.</li>
+                </ul>
+            </section>
+
+            <section id="wire" class="lesson-section">
+                <h2>Wiring the Collectible</h2>
+                <p>Update the <code>Collectible</code> script from Lesson 5.4 so that, on pickup, it finds the GameManager and adds a point:</p>
+                <pre><code class="language-csharp">void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Player"))
+    {
+        // find the GameManager in the scene and score a point
+        GameManager gm = FindObjectOfType&lt;GameManager&gt;();
+        if (gm != null) gm.AddPoint();
+
+        Destroy(gameObject);
+    }
+}</code></pre>
+                <p>Now: player touches star → collectible calls <code>gm.AddPoint()</code> → score increases → HUD text updates. Wire the text once (drag the HUD text into the GameManager's <strong>Score Text</strong> slot) and it all flows.</p>
+            </section>
+
+            <section id="connect" class="lesson-section">
+                <h2>How Scripts Talk to Each Other</h2>
+                <div class="mermaid">
+                    graph LR
+                    A[Collectible<br/>OnTriggerEnter] -->|calls| B[GameManager.AddPoint]
+                    B -->|updates| C[TMP_Text on the HUD]
+                </div>
+                <p>We used <code>FindObjectOfType&lt;GameManager&gt;()</code> — a simple way for one script to grab another. It's perfect for learning. As projects grow you'll meet tidier patterns (like a singleton), but don't worry about that yet.</p>
+                <div class="card card-warning">
+                    <h4>⚠️ NullReferenceException on scoreText?</h4>
+                    <p>You forgot to drag the HUD text object into the GameManager's <strong>Score Text</strong> slot. An empty slot means <code>scoreText</code> is nothing, and <code>scoreText.text = ...</code> throws. Drag it in.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Make it count</h3>
+                    <ol>
+                        <li>Add a HUD text (Lesson 6.1) reading <code>Score: 0</code>.</li>
+                        <li>Create a <code>GameManager</code> object with the script; drag the HUD text into its <strong>Score Text</strong> slot.</li>
+                        <li>Update your <code>Collectible</code> to call <code>AddPoint()</code> on pickup.</li>
+                        <li>Play, collect a few stars, and watch the score climb.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Score doesn't change</summary>
+                        <p>Check: the HUD text is dragged into the GameManager slot; the collectible actually collects (three-must-haves from Lesson 5.4); and there's exactly one GameManager in the scene.</p>
+                    </details>
+                    <details>
+                        <summary>✅ Bonus: a win message</summary>
+                        <p>Add a total-stars count. When <code>score</code> reaches it, set the HUD text to "You win!". (We formalize win/lose in Module 7.)</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Why is <code>AddPoint()</code> marked <code>public</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! So other scripts (the collectible) can call it.">A) So another script (the collectible) can call it</button>
+                            <button class="quiz-option" data-correct="false" data-hint="public isn't about speed.">B) To make it run faster</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't auto-run.">C) So Unity runs it every frame</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What must you drag into the GameManager's Score Text slot?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The TextMeshPro HUD text object.">A) The HUD's TextMeshPro text object</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not the player.">B) The player</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not the camera.">C) The Main Camera</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>GameManager</strong> holds game-wide data like the score.</li>
+                        <li>Update UI from code via a <code>TMP_Text</code> reference and <code>scoreText.text = ...</code> (remember <code>using TMPro;</code>).</li>
+                        <li>A collectible calls <code>gm.AddPoint()</code> on pickup; wire the text slot in the Inspector.</li>
+                        <li><code>FindObjectOfType&lt;GameManager&gt;()</code> is a simple way for scripts to find each other.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Numbers going up is good; a satisfying <em>ding</em> when it happens is better. <strong>Lesson 6.3</strong> adds sound effects and music.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 It keeps score!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_20.html" class="prev-lesson">← Previous: Building a UI Canvas</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_22.html" class="next-lesson">Next: Adding Sound &amp; Music →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

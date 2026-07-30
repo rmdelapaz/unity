@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Read keyboard and mouse input in Unity with the Input class — GetAxis, GetKey, GetKeyDown — the foundation of player control.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4.1: Reading Player Input — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4: Input &amp; Player Control</a></li>
+            <li aria-current="page">Lesson 4.1: Reading Player Input</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🎹 Lesson 4.1: Reading Player Input</h1>
+                <p class="lead">A game responds to <em>you</em>. In this lesson you'll learn to read the keyboard and mouse in code — the first half of turning a static object into a controllable player.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Read directional input with <code>Input.GetAxis</code></li>
+                        <li>Detect key presses with <code>Input.GetKey</code> and <code>Input.GetKeyDown</code></li>
+                        <li>Detect mouse clicks with <code>Input.GetMouseButtonDown</code></li>
+                        <li>Fix the Unity 6 "Input not set up" gotcha</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#setup" class="toc-link">One-time Setup (Unity 6)</a></li>
+                    <li><a href="#axis" class="toc-link">Directional Input: GetAxis</a></li>
+                    <li><a href="#keys" class="toc-link">Key Presses</a></li>
+                    <li><a href="#mouse" class="toc-link">Mouse Clicks</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="setup" class="lesson-section">
+                <h2>One-time Setup (Unity 6)</h2>
+                <p>This course uses Unity's classic, beginner-friendly <code>Input</code> class. Unity 6 sometimes ships projects set to only use the newer Input System package, which makes <code>Input.GetAxis</code> throw an error. Set it once and forget it:</p>
+                <ol>
+                    <li>Go to <strong>Edit ▸ Project Settings ▸ Player</strong>.</li>
+                    <li>Under <strong>Other Settings ▸ Active Input Handling</strong>, choose <strong>Both</strong> (or <strong>Input Manager (Old)</strong>).</li>
+                    <li>Unity may ask to restart — let it.</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ If you see "InvalidOperationException: You are trying to read Input using the UnityEngine.Input class, but…"</h4>
+                    <p>That's exactly this setting. Switch Active Input Handling to <strong>Both</strong> and restart. Then the code in this module works.</p>
+                </div>
+            </section>
+
+            <section id="axis" class="lesson-section">
+                <h2>Directional Input: GetAxis</h2>
+                <p><code>Input.GetAxis</code> gives a smooth number from <strong>-1 to +1</strong> for a named axis. Unity pre-defines two:</p>
+                <ul>
+                    <li><code>"Horizontal"</code> — A/D and ← → keys. Left = -1, right = +1.</li>
+                    <li><code>"Vertical"</code> — W/S and ↑ ↓ keys. Down = -1, up = +1.</li>
+                </ul>
+                <pre><code class="language-csharp">void Update()
+{
+    float h = Input.GetAxis("Horizontal");  // -1 .. +1
+    float v = Input.GetAxis("Vertical");    // -1 .. +1
+    Debug.Log("h: " + h + "   v: " + v);
+}</code></pre>
+                <p>Press Play and hold the arrow keys while watching the Console — the numbers glide toward ±1 and back to 0. In the next lesson we'll feed these straight into movement.</p>
+                <blockquote><strong>💡 Why -1 to +1?</strong> It's a direction <em>and</em> strength in one number. Multiply it by your speed and you get movement that respects which key is held — no separate "if left / if right" needed.</blockquote>
+            </section>
+
+            <section id="keys" class="lesson-section">
+                <h2>Key Presses</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Method</th><th>True when…</th><th>Use for</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>Input.GetKey(KeyCode.Space)</code></td><td>the key is <em>held</em> (every frame)</td><td>continuous actions (holding to charge)</td></tr>
+                            <tr><td><code>Input.GetKeyDown(KeyCode.Space)</code></td><td>the frame the key is <em>first pressed</em></td><td>one-shot actions (jump, shoot)</td></tr>
+                            <tr><td><code>Input.GetKeyUp(KeyCode.Space)</code></td><td>the frame the key is <em>released</em></td><td>release actions</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <pre><code class="language-csharp">void Update()
+{
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+        Debug.Log("Jump!");   // prints ONCE per press
+    }
+}</code></pre>
+                <div class="card card-warning">
+                    <h4>⚠️ Down vs Key</h4>
+                    <p>Use <strong>GetKeyDown</strong> for actions that should happen once per press (jump, fire). Use <strong>GetKey</strong> only for things that repeat while held. Mixing them up causes "my character jumps 60 times" bugs.</p>
+                </div>
+            </section>
+
+            <section id="mouse" class="lesson-section">
+                <h2>Mouse Clicks</h2>
+                <pre><code class="language-csharp">void Update()
+{
+    if (Input.GetMouseButtonDown(0))   // 0 = left, 1 = right, 2 = middle
+    {
+        Debug.Log("Left click!");
+    }
+}</code></pre>
+                <p>Just like keys, there's <code>GetMouseButton</code> (held) and <code>GetMouseButtonDown</code> (this frame). The mouse's position is available as <code>Input.mousePosition</code>.</p>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Input reporter</h3>
+                    <ol>
+                        <li>Make sure Active Input Handling is set to <strong>Both</strong>.</li>
+                        <li>Create a script <code>InputTester</code> that prints Horizontal and Vertical every frame.</li>
+                        <li>Add a <code>GetKeyDown(KeyCode.Space)</code> that logs "Jump!" once per press.</li>
+                        <li>Add a left-click that logs "Fire!".</li>
+                        <li>Attach it to any object, press Play, and exercise every input while watching the Console.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Errors about Input?</summary>
+                        <p>Set Edit ▸ Project Settings ▸ Player ▸ Active Input Handling to <strong>Both</strong> and restart Unity.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What range of values does <code>Input.GetAxis("Horizontal")</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Not 0 to 100.">A) 0 to 100</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! -1 to +1, smoothly.">B) -1 to +1</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not just true/false.">C) true or false</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> For a jump that should happen once per press, which do you use?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="GetKey is true every frame it's held — many jumps.">A) Input.GetKey</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! GetKeyDown fires once, on the press.">B) Input.GetKeyDown</button>
+                            <button class="quiz-option" data-correct="false" data-hint="GetAxis is for directions.">C) Input.GetAxis</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Set <strong>Active Input Handling</strong> to <strong>Both</strong> so the classic <code>Input</code> class works in Unity 6.</li>
+                        <li><code>Input.GetAxis("Horizontal"/"Vertical")</code> gives a smooth -1..+1 direction.</li>
+                        <li><code>GetKeyDown</code> = once per press; <code>GetKey</code> = every frame held.</li>
+                        <li><code>GetMouseButtonDown(0)</code> detects a left click.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You can read input — now let's turn it into movement. <strong>Lesson 4.2</strong> makes a player character walk around.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 The game can hear you now!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_12.html" class="prev-lesson">← Previous: Debugging with the Console</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_14.html" class="next-lesson">Next: Moving a Player Character →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

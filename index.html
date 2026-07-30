@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Unity Fundamentals — an absolute-beginner course for the Unity 6 game engine. Learn the Editor, GameObjects, C# scripting, physics, UI and audio by building a real mini-game.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Unity Fundamentals — Build Your First Games with Unity 6</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <!-- Progress indicator -->
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">
+                ☰
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="#introduction">Introduction</a>
+                <a href="#modules">Modules</a>
+                <a href="#prerequisites">Prerequisites</a>
+                <a href="#resources">Resources</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li aria-current="page">Home</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <header>
+                <h1>🎮 Unity Fundamentals</h1>
+                <p class="lead">Build your first games with <strong>Unity 6</strong> — starting from absolute zero. No coding experience and no game-dev background required. You'll learn by doing, and by the end you'll have built and shipped a small, complete game of your own.</p>
+            </header>
+
+            <!-- Overall Progress -->
+            <div id="overall-progress" class="card">
+                <!-- Progress will be inserted by JavaScript -->
+            </div>
+
+            <!-- Introduction Section -->
+            <section id="introduction" class="card">
+                <h2>📚 About This Course</h2>
+                <p>Unity is one of the most widely used game engines in the world — the tool behind thousands of mobile, PC, and console games. It can look intimidating the first time you open it, with panels and buttons everywhere. This course takes the fear out of it.</p>
+                <p>We move slowly and explain <em>everything</em>. Each lesson introduces one idea, shows you exactly where to click, gives you a small hands-on task, and builds on the last. You are never expected to already know a term before we teach it — including the programming. By Module 3 you'll be writing your first C# scripts, and by Module 7 you'll assemble everything into a real playable mini-game.</p>
+                <p>Every screenshot of the game world in this course is a <strong>real render from Unity</strong>, and the Editor panels shown are faithful recreations of Unity 6's actual interface — so what you see here is what you'll see on your screen.</p>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Find your way around the Unity 6 Editor with confidence</li>
+                    <li>Build scenes from GameObjects and configure them with components</li>
+                    <li>Write beginner-friendly C# scripts to make things move and react</li>
+                    <li>Handle player input, physics, collisions, and collectibles</li>
+                    <li>Create on-screen UI, a live score, sound effects, and music</li>
+                    <li>Assemble, polish, and build a complete mini-game you can share</li>
+                </ul>
+
+                <h3>Who This Course Is For</h3>
+                <ul>
+                    <li>Complete beginners who have never opened Unity before</li>
+                    <li>People new to programming — we teach the C# you need from scratch</li>
+                    <li>Hobbyists, students, and career-changers curious about making games</li>
+                    <li>Anyone who learns best by building something real, step by step</li>
+                </ul>
+
+                <div class="card card-info">
+                    <h4>💡 Built for Unity 6</h4>
+                    <p>This course targets <strong>Unity 6 (6000.5)</strong> with the <strong>Universal Render Pipeline (URP)</strong> — the current recommended setup for new projects. Menu paths, screenshots, and code all match this version.</p>
+                </div>
+            </section>
+
+            <!-- Course Modules/Lessons -->
+            <section id="modules">
+                <h2>📖 Course Modules</h2>
+                <p>29 lessons across 8 modules. Work through them in order — each one assumes what came before.</p>
+
+                <!-- Module 1 -->
+                <div class="card lesson-card">
+                    <h3>Module 1: Meet Unity</h3>
+                    <p>Install Unity and get comfortable in the Editor — the workspace where you'll build everything.</p>
+                    <ul>
+                        <li><a href="lesson_01.html" class="lesson-link">Lesson 1.1: What Is Unity &amp; What You'll Build</a></li>
+                        <li><a href="lesson_02.html" class="lesson-link">Lesson 1.2: Installing Unity Hub &amp; Unity 6</a></li>
+                        <li><a href="lesson_03.html" class="lesson-link">Lesson 1.3: The Unity Editor Interface</a></li>
+                        <li><a href="lesson_04.html" class="lesson-link">Lesson 1.4: Creating &amp; Saving Your First Scene</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="card lesson-card">
+                    <h3>Module 2: GameObjects &amp; Components</h3>
+                    <p>The core idea behind everything in Unity: objects made of components you configure.</p>
+                    <ul>
+                        <li><a href="lesson_05.html" class="lesson-link">Lesson 2.1: GameObjects &amp; the Component Model</a></li>
+                        <li><a href="lesson_06.html" class="lesson-link">Lesson 2.2: The Transform — Position, Rotation, Scale</a></li>
+                        <li><a href="lesson_07.html" class="lesson-link">Lesson 2.3: Primitives, Meshes &amp; Materials</a></li>
+                        <li><a href="lesson_08.html" class="lesson-link">Lesson 2.4: Prefabs — Reusable GameObjects</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="card lesson-card">
+                    <h3>Module 3: C# Scripting Basics</h3>
+                    <p>Write your first code and make objects do things — gently, from the ground up.</p>
+                    <ul>
+                        <li><a href="lesson_09.html" class="lesson-link">Lesson 3.1: Your First Script — MonoBehaviour</a></li>
+                        <li><a href="lesson_10.html" class="lesson-link">Lesson 3.2: Variables &amp; Public Inspector Fields</a></li>
+                        <li><a href="lesson_11.html" class="lesson-link">Lesson 3.3: Moving Objects with Code</a></li>
+                        <li><a href="lesson_12.html" class="lesson-link">Lesson 3.4: Debugging with the Console</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="card lesson-card">
+                    <h3>Module 4: Input &amp; Player Control</h3>
+                    <p>Read the keyboard and mouse, move a character, and follow it with the camera.</p>
+                    <ul>
+                        <li><a href="lesson_13.html" class="lesson-link">Lesson 4.1: Reading Player Input</a></li>
+                        <li><a href="lesson_14.html" class="lesson-link">Lesson 4.2: Moving a Player Character</a></li>
+                        <li><a href="lesson_15.html" class="lesson-link">Lesson 4.3: Making the Camera Follow</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="card lesson-card">
+                    <h3>Module 5: Physics &amp; Collisions</h3>
+                    <p>Add gravity, make things collide, and react to those collisions in code.</p>
+                    <ul>
+                        <li><a href="lesson_16.html" class="lesson-link">Lesson 5.1: Rigidbodies &amp; Gravity</a></li>
+                        <li><a href="lesson_17.html" class="lesson-link">Lesson 5.2: Colliders &amp; Triggers</a></li>
+                        <li><a href="lesson_18.html" class="lesson-link">Lesson 5.3: Handling Collisions in Code</a></li>
+                        <li><a href="lesson_19.html" class="lesson-link">Lesson 5.4: Building a Collectible</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="card lesson-card">
+                    <h3>Module 6: UI &amp; Feedback</h3>
+                    <p>Show the player what's happening — text, buttons, a live score, and sound.</p>
+                    <ul>
+                        <li><a href="lesson_20.html" class="lesson-link">Lesson 6.1: Building a UI Canvas</a></li>
+                        <li><a href="lesson_21.html" class="lesson-link">Lesson 6.2: A Live Score Counter</a></li>
+                        <li><a href="lesson_22.html" class="lesson-link">Lesson 6.3: Adding Sound &amp; Music</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 7 -->
+                <div class="card lesson-card">
+                    <h3>Module 7: Mini-Game Project</h3>
+                    <p>Put it all together into a small, complete, playable game.</p>
+                    <ul>
+                        <li><a href="lesson_23.html" class="lesson-link">Lesson 7.1: Planning Your Mini-Game</a></li>
+                        <li><a href="lesson_24.html" class="lesson-link">Lesson 7.2: Building the Level</a></li>
+                        <li><a href="lesson_25.html" class="lesson-link">Lesson 7.3: Win &amp; Lose Conditions</a></li>
+                        <li><a href="lesson_26.html" class="lesson-link">Lesson 7.4: Adding Polish — Particles &amp; Post-Processing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 8 -->
+                <div class="card lesson-card">
+                    <h3>Module 8: Build &amp; Share</h3>
+                    <p>Keep your project tidy, build a real game file, and plan where to go next.</p>
+                    <ul>
+                        <li><a href="lesson_27.html" class="lesson-link">Lesson 8.1: Organizing Your Project</a></li>
+                        <li><a href="lesson_28.html" class="lesson-link">Lesson 8.2: Building Your Game (WebGL &amp; Desktop)</a></li>
+                        <li><a href="lesson_29.html" class="lesson-link">Lesson 8.3: Where to Go Next</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Prerequisites Section -->
+            <section id="prerequisites" class="card">
+                <h2>✅ Prerequisites</h2>
+                <p>You don't need any prior experience. You <em>do</em> need:</p>
+                <ul>
+                    <li>A Windows or macOS computer that can run Unity 6 (a reasonably modern machine from the last few years)</li>
+                    <li>Around 15–20 GB of free disk space for Unity and your project</li>
+                    <li>An internet connection to download Unity (a few GB)</li>
+                    <li>Curiosity and a willingness to experiment — that's the real prerequisite</li>
+                </ul>
+
+                <h3>Software You'll Install (we walk you through it)</h3>
+                <ul>
+                    <li><strong>Unity Hub</strong> — the free launcher that manages Unity versions and projects</li>
+                    <li><strong>Unity 6 (6000.5 LTS)</strong> — the engine itself, installed through the Hub</li>
+                    <li><strong>Visual Studio</strong> or <strong>VS Code</strong> — a free code editor for writing C# (bundled option offered during install)</li>
+                </ul>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="card">
+                <h2>📚 Additional Resources</h2>
+
+                <h3>Official Unity Resources</h3>
+                <ul>
+                    <li><a href="https://unity.com/download" target="_blank" rel="noopener">Download Unity Hub</a></li>
+                    <li><a href="https://docs.unity3d.com/Manual/index.html" target="_blank" rel="noopener">Unity Manual</a></li>
+                    <li><a href="https://docs.unity3d.com/ScriptReference/" target="_blank" rel="noopener">Unity Scripting API Reference</a></li>
+                    <li><a href="https://learn.unity.com/" target="_blank" rel="noopener">Unity Learn — free official tutorials</a></li>
+                </ul>
+
+                <h3>Community &amp; Help</h3>
+                <ul>
+                    <li><a href="https://discussions.unity.com/" target="_blank" rel="noopener">Unity Discussions (official forum)</a></li>
+                    <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/" target="_blank" rel="noopener">Microsoft C# Documentation</a></li>
+                </ul>
+            </section>
+
+            <!-- Search Section -->
+            <section class="card">
+                <h2>🔍 Search Course Content</h2>
+                <div style="position: relative;">
+                    <input type="text" id="search-input" placeholder="Search lessons, topics, or keywords..."
+                           aria-label="Search course content">
+                    <div id="search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0;"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

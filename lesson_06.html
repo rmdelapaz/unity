@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master the Transform component — position, rotation, and scale — the one component every GameObject has. Includes the 3D axis system.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.2: The Transform — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2: GameObjects &amp; Components</a></li>
+            <li aria-current="page">Lesson 2.2: The Transform</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📐 Lesson 2.2: The Transform — Position, Rotation, Scale</h1>
+                <p class="lead">Every GameObject has a Transform. It answers three questions: <em>where</em> is it, <em>which way</em> is it facing, and <em>how big</em> is it? Master these three and you can place anything, anywhere.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Understand the 3D axis system: <span style="color:#c0392b;font-weight:700;">X</span>, <span style="color:#27ae60;font-weight:700;">Y</span>, <span style="color:#2980b9;font-weight:700;">Z</span></li>
+                        <li>Use <strong>Position</strong>, <strong>Rotation</strong>, and <strong>Scale</strong> to place objects</li>
+                        <li>Use the on-screen Move, Rotate, and Scale tools</li>
+                        <li>Understand parenting and <em>local</em> vs <em>world</em> space (gently)</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#axes" class="toc-link">The 3D Axis System</a></li>
+                    <li><a href="#three" class="toc-link">Position, Rotation, Scale</a></li>
+                    <li><a href="#tools" class="toc-link">The Transform Tools</a></li>
+                    <li><a href="#parent" class="toc-link">Parenting</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="axes" class="lesson-section">
+                <h2>The 3D Axis System</h2>
+                <p>3D space has three directions, and Unity gives each a colour you'll see everywhere:</p>
+                <ul>
+                    <li><span style="color:#c0392b;font-weight:700;">X (red)</span> — left ↔ right</li>
+                    <li><span style="color:#27ae60;font-weight:700;">Y (green)</span> — down ↕ up</li>
+                    <li><span style="color:#2980b9;font-weight:700;">Z (blue)</span> — back ↔ forward</li>
+                </ul>
+                <p>A position like <code>(2, 0.5, -3)</code> means "2 right, 0.5 up, 3 back" from the world centre. Memorize the colours now — they appear on the move tool, the Transform fields, and the scene gizmo.</p>
+                <blockquote><strong>💡 Memory aid:</strong> <span style="color:#c0392b;font-weight:700;">R</span>ed = <span style="color:#c0392b;font-weight:700;">R</span>ight-left (X). Green grows up (Y). Blue goes into the screen (Z).</blockquote>
+            </section>
+
+            <section id="three" class="lesson-section">
+                <h2>Position, Rotation, Scale</h2>
+                <p>These three cubes are identical GameObjects — only their Transforms differ. The left cube is normal, the middle is <strong>rotated</strong> 45° around Y, and the right is <strong>scaled</strong> to be twice as tall:</p>
+                <figure>
+                    <img src="images/transform-demo.png" alt="A real Unity render of three cubes on a floor: a normal cube, a cube rotated 45 degrees, and a taller stretched cube.">
+                    <figcaption>Figure 1: Same object, three Transforms — real render. Rotation turns it; Scale stretches it.</figcaption>
+                </figure>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Field</th><th>Meaning</th><th>Example</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Position</strong></td><td>Where the object sits, in units</td><td><code>(0, 0.5, 0)</code> = half a unit up</td></tr>
+                            <tr><td><strong>Rotation</strong></td><td>How it's turned, in degrees</td><td><code>(0, 45, 0)</code> = turned 45° around Y</td></tr>
+                            <tr><td><strong>Scale</strong></td><td>Its size multiplier (1 = normal)</td><td><code>(1, 2, 1)</code> = twice as tall</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="tools" class="lesson-section">
+                <h2>The Transform Tools</h2>
+                <p>You can type exact values in the Inspector <em>or</em> drag with the on-screen tools. The tool buttons live at the top-left of the Toolbar, and each has a keyboard shortcut:</p>
+                <ul>
+                    <li><strong>Move (W)</strong> — drag the coloured arrows to reposition.</li>
+                    <li><strong>Rotate (E)</strong> — drag the coloured rings to turn.</li>
+                    <li><strong>Scale (R)</strong> — drag the coloured handles to resize.</li>
+                </ul>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Drag for rough placement, then fine-tune with exact numbers in the Inspector. For anything that needs to be precise (like sitting exactly on the floor), always type the value.</p>
+                </div>
+            </section>
+
+            <section id="parent" class="lesson-section">
+                <h2>Parenting: Transforms Inside Transforms</h2>
+                <p>In the Hierarchy you can drag one GameObject <em>onto</em> another to make it a <strong>child</strong>. A child moves, rotates, and scales <em>with</em> its parent — like a hat on a head.</p>
+                <div class="mermaid">
+                    graph TD
+                    P[Car ] --> W1[Wheel FL]
+                    P --> W2[Wheel FR]
+                    P --> W3[Wheel RL]
+                    P --> W4[Wheel RR]
+                </div>
+                <p>Move the Car and all four wheels follow. A child's Transform values are measured <em>relative to its parent</em> — that's called <strong>local space</strong>. This is why the robot in our example scene has dozens of child bones that all move with it.</p>
+                <blockquote><strong>💡 Don't overthink this yet.</strong> Just remember: children follow their parent. We'll use parenting practically when we build the mini-game.</blockquote>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Recreate Figure 1</h3>
+                    <ol>
+                        <li>In a scene with a floor, add three Cubes.</li>
+                        <li>Cube 1: Position <code>(-2.5, 0.5, 0)</code>, leave rotation and scale default.</li>
+                        <li>Cube 2: Position <code>(0, 0.5, 0)</code>, Rotation <code>(0, 45, 0)</code>.</li>
+                        <li>Cube 3: Scale <code>(1, 2, 1)</code>, then Position <code>(2.5, 1, 0)</code> so it rests on the floor.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Why Position Y = 1 for the tall cube?</summary>
+                        <p>Scaling to height 2 makes it 2 units tall, so its centre must be 1 unit up to sit on the floor (half of 2).</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which axis points up?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="X is left/right.">A) X (red)</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Y (green) is up/down.">B) Y (green)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Z is forward/back.">C) Z (blue)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> A child GameObject's position moves when...</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Children follow their parent.">A) Its parent moves</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Siblings are independent.">B) A sibling moves</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Children do follow their parent.">C) Never — children are independent</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>3D uses three colour-coded axes: <span style="color:#c0392b;font-weight:700;">X</span> right/left, <span style="color:#27ae60;font-weight:700;">Y</span> up/down, <span style="color:#2980b9;font-weight:700;">Z</span> forward/back.</li>
+                        <li>The Transform holds <strong>Position</strong>, <strong>Rotation</strong>, and <strong>Scale</strong>.</li>
+                        <li>Use the <strong>Move (W)</strong>, <strong>Rotate (E)</strong>, <strong>Scale (R)</strong> tools or type exact values.</li>
+                        <li><strong>Children</strong> follow their parent's Transform.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Objects have shape and position — next we make them look good. <strong>Lesson 2.3</strong> covers meshes and materials (colour!).</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You can place anything now!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_05.html" class="prev-lesson">← Previous: GameObjects &amp; the Component Model</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_07.html" class="next-lesson">Next: Primitives, Meshes &amp; Materials →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

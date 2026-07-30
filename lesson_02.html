@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Step-by-step: install Unity Hub and Unity 6, add the right modules (including WebGL Build Support), and create your first project with the URP 3D template.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.2: Installing Unity Hub &amp; Unity 6 — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+    <style>
+        .ui-figure { margin: var(--spacing-lg) 0; text-align: center; }
+        .ui-figure svg { width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.28); }
+        .ui-figure figcaption { margin-top: var(--spacing-sm); font-size: 0.9rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1: Meet Unity</a></li>
+            <li aria-current="page">Lesson 1.2: Installing Unity Hub &amp; Unity 6</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⬇️ Lesson 1.2: Installing Unity Hub &amp; Unity 6</h1>
+                <p class="lead">Let's get Unity onto your computer. You'll install <strong>Unity Hub</strong> (a small manager app), then use it to install <strong>Unity 6</strong> with the right add-ons, and finally create your first project.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Install Unity Hub and sign in with a free Unity account</li>
+                        <li>Install <strong>Unity 6 (6000.5 LTS)</strong> through the Hub</li>
+                        <li>Choose the right <strong>modules</strong> — including WebGL Build Support and a code editor</li>
+                        <li>Create a new project using the <strong>Universal 3D (URP)</strong> template</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes (plus download time)</p>
+                    <p><strong>You'll need:</strong> A computer with ~15–20 GB free and an internet connection.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span>
+                    <span class="toc-label">In This Lesson</span>
+                    <span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#overview" class="toc-link">Two Things to Install</a></li>
+                        <li><a href="#hub" class="toc-link">Step 1: Install Unity Hub</a></li>
+                        <li><a href="#account" class="toc-link">Step 2: Sign In (Free Account)</a></li>
+                        <li><a href="#editor" class="toc-link">Step 3: Install Unity 6</a></li>
+                        <li><a href="#project" class="toc-link">Step 4: Create Your First Project</a></li>
+                        <li><a href="#trouble" class="toc-link">Troubleshooting</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <section id="overview" class="lesson-section">
+                <h2>Two Things to Install</h2>
+                <p>New users are often surprised there are <em>two</em> downloads. Here's why:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Unity Hub</th><th>Unity Editor</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>A small <strong>manager app</strong>. It installs Editor versions and organizes your projects. You keep it forever.</td>
+                                <td>The actual <strong>engine</strong> — the big download. You can have several versions installed side by side; the Hub keeps them tidy.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mermaid">
+                    graph LR
+                    A[Download<br/>Unity Hub] --> B[Sign in<br/>free account]
+                    B --> C[Install<br/>Unity 6 + modules]
+                    C --> D[Create<br/>new project]
+                    D --> E[Editor opens 🎉]
+                </div>
+            </section>
+
+            <section id="hub" class="lesson-section">
+                <h2>Step 1: Install Unity Hub</h2>
+                <ol>
+                    <li>Open your web browser and go to the official download page: <a href="https://unity.com/download" target="_blank" rel="noopener">unity.com/download</a>.</li>
+                    <li>Click <strong>Download for Windows</strong> (or <strong>macOS</strong>). This downloads <em>Unity Hub</em>, not the whole engine yet.</li>
+                    <li>Run the downloaded installer and accept the defaults. When it finishes, <strong>Unity Hub</strong> opens.</li>
+                </ol>
+                <blockquote>
+                    <strong>💡 Only download from unity.com.</strong> Avoid third-party "Unity download" sites — always use the official page above.
+                </blockquote>
+            </section>
+
+            <section id="account" class="lesson-section">
+                <h2>Step 2: Sign In With a Free Account</h2>
+                <p>Unity asks you to sign in so it can activate a free license. This is normal and free for individuals.</p>
+                <ol>
+                    <li>In Unity Hub, click the account icon (top-left) and choose <strong>Sign in</strong>.</li>
+                    <li>Create a Unity ID if you don't have one (email + password), or sign in.</li>
+                    <li>When prompted for a license, choose the <strong>Unity Personal</strong> (free) plan.</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Account creation &amp; passwords</h4>
+                    <p>You'll enter your own email and password on Unity's website in your browser — do this yourself; never share credentials. The Personal license is free; you won't be asked for payment.</p>
+                </div>
+            </section>
+
+            <section id="editor" class="lesson-section">
+                <h2>Step 3: Install Unity 6</h2>
+                <p>Now the main event. In Unity Hub:</p>
+                <ol>
+                    <li>Click the <strong>Installs</strong> tab on the left.</li>
+                    <li>Click <strong>Install Editor</strong> (top-right).</li>
+                    <li>Choose the latest <strong>Unity 6 LTS</strong> release (this course uses <strong>6000.5</strong>). "LTS" means Long-Term Support — the stable choice.</li>
+                    <li>On the <strong>Add modules</strong> screen, tick the extras you'll want. At minimum:</li>
+                </ol>
+
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 560 300" role="img" aria-labelledby="modTitle modDesc" style="max-width:560px;">
+                        <title id="modTitle">The Add Modules checklist</title>
+                        <desc id="modDesc">A recreation of Unity Hub's Add Modules screen, with checkboxes for a code editor (Visual Studio), WebGL Build Support (ticked and highlighted), Windows/Mac Build Support, and Documentation.</desc>
+                        <rect x="0" y="0" width="560" height="300" rx="8" fill="#2b2b2b" stroke="#161616"/>
+                        <rect x="0" y="0" width="560" height="34" rx="8" fill="#323232"/>
+                        <text x="18" y="22" font-family="'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#e6e6e6">Add modules</text>
+                        <g font-family="'Segoe UI',sans-serif" font-size="13" fill="#d2d2d2">
+                            <!-- item 1 -->
+                            <rect x="20" y="52" width="16" height="16" rx="3" fill="#2a2a2a" stroke="#7f7f7f"/>
+                            <path d="M23 60 l3 3 l7 -7" stroke="#5fb37f" stroke-width="2" fill="none"/>
+                            <text x="46" y="65">Microsoft Visual Studio (code editor)</text>
+                            <!-- item 2 highlighted -->
+                            <rect x="14" y="84" width="532" height="30" rx="4" fill="#2c5d87"/>
+                            <rect x="20" y="90" width="16" height="16" rx="3" fill="#2a2a2a" stroke="#cfe6ff"/>
+                            <path d="M23 98 l3 3 l7 -7" stroke="#8fe0a0" stroke-width="2.2" fill="none"/>
+                            <text x="46" y="103" fill="#ffffff" font-weight="700">WebGL Build Support  ⭐ (needed for web builds)</text>
+                            <!-- item 3 -->
+                            <rect x="20" y="126" width="16" height="16" rx="3" fill="#2a2a2a" stroke="#7f7f7f"/>
+                            <path d="M23 134 l3 3 l7 -7" stroke="#5fb37f" stroke-width="2" fill="none"/>
+                            <text x="46" y="139">Windows / Mac Build Support</text>
+                            <!-- item 4 unchecked -->
+                            <rect x="20" y="158" width="16" height="16" rx="3" fill="#2a2a2a" stroke="#7f7f7f"/>
+                            <text x="46" y="171" fill="#9a9a9a">Documentation (optional, large)</text>
+                            <!-- item 5 unchecked -->
+                            <rect x="20" y="190" width="16" height="16" rx="3" fill="#2a2a2a" stroke="#7f7f7f"/>
+                            <text x="46" y="203" fill="#9a9a9a">Language packs (optional)</text>
+                        </g>
+                        <rect x="430" y="250" width="110" height="30" rx="5" fill="#3b82f6"/>
+                        <text x="485" y="270" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="13" fill="#fff">Continue</text>
+                    </svg>
+                    <figcaption>Figure 1: The Add Modules screen (recreated). Be sure to tick a <strong>code editor</strong> and <strong>WebGL Build Support</strong> — we'll publish to the web in Module 8.</figcaption>
+                </figure>
+
+                <ol start="5">
+                    <li>Click <strong>Continue</strong>, accept the terms, and let it download and install. This is the big download — grab a coffee.</li>
+                </ol>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Forgot to add WebGL support? No problem. In the <strong>Installs</strong> tab, click the ⚙️ (gear) on your Unity 6 install and choose <strong>Add modules</strong> any time.</p>
+                </div>
+            </section>
+
+            <section id="project" class="lesson-section">
+                <h2>Step 4: Create Your First Project</h2>
+                <ol>
+                    <li>Click the <strong>Projects</strong> tab, then <strong>New project</strong>.</li>
+                    <li>Make sure your <strong>Unity 6</strong> version is selected at the top.</li>
+                    <li>Choose the <strong>Universal 3D</strong> template (this is URP — the pipeline this course uses).</li>
+                    <li>Give the project a name like <code>UnityFundamentals</code> and pick a folder.</li>
+                    <li>Click <strong>Create project</strong>. The Editor opens with a starter scene. 🎉</li>
+                </ol>
+                <blockquote>
+                    <strong>💡 Which template?</strong> You'll see several. <strong>Universal 3D</strong> is the right general-purpose choice for this course. The plain "3D (Built-in)" template uses an older render pipeline and won't match our screenshots.
+                </blockquote>
+            </section>
+
+            <section id="trouble" class="lesson-section">
+                <h2>Troubleshooting</h2>
+                <div class="card card-warning">
+                    <h4>⚠️ Common hiccups</h4>
+                    <ul>
+                        <li><strong>Download seems stuck:</strong> large installs can pause on slow connections — give it time before cancelling.</li>
+                        <li><strong>Not enough disk space:</strong> Unity 6 plus a project needs well over 10 GB. Free up space and retry.</li>
+                        <li><strong>"License not activated":</strong> sign in again from the Hub's account menu and select the free Personal plan.</li>
+                        <li><strong>Editor won't open:</strong> update your graphics drivers and make sure your OS meets Unity 6's system requirements.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Install <strong>Unity Hub</strong> first — it manages Editor versions and projects.</li>
+                        <li>Install <strong>Unity 6 LTS (6000.5)</strong> through the Hub, with a <strong>code editor</strong> and <strong>WebGL Build Support</strong>.</li>
+                        <li>Sign in with a free <strong>Personal</strong> license.</li>
+                        <li>Create a project with the <strong>Universal 3D (URP)</strong> template.</li>
+                    </ul>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is Unity Hub for?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The Hub isn't the engine itself.">A) It's the game engine you build in</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The Hub manages Editor versions and your projects.">B) A manager app that installs Editor versions and organizes projects</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't publish games to stores.">C) A store for publishing your games</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which template should you choose for this course?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Universal 3D (URP) matches this course.">A) Universal 3D (URP)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The Built-in pipeline won't match our screenshots.">B) 3D (Built-in)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="We're building 3D fundamentals, not 2D here.">C) 2D</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>With Unity installed and a project open, and now that you know your way around the Editor (Lesson 1.3), you're ready to <em>make</em> something. In <strong>Lesson 1.4</strong> you'll create and save your very first scene.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Installed and ready!</h3>
+                    <p>The hard part (waiting for downloads) is behind you. Now the fun begins.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_01.html" class="prev-lesson">← Previous: What Is Unity &amp; What You'll Build</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_03.html" class="next-lesson">Next: The Unity Editor Interface →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

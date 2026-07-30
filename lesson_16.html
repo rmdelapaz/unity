@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add real physics with the Rigidbody component — gravity, mass, and forces. Make objects fall, and learn when to use physics vs moving by Transform.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.1: Rigidbodies &amp; Gravity — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5: Physics &amp; Collisions</a></li>
+            <li aria-current="page">Lesson 5.1: Rigidbodies &amp; Gravity</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌍 Lesson 5.1: Rigidbodies &amp; Gravity</h1>
+                <p class="lead">So far your objects float, frozen, ignoring gravity. Add one component — the <strong>Rigidbody</strong> — and Unity's physics engine takes over: things fall, tumble, stack, and collide, all on their own.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Add a <strong>Rigidbody</strong> to make an object obey physics</li>
+                        <li>Understand gravity, mass, and the difference physics makes</li>
+                        <li>Know when to move by physics vs by Transform</li>
+                        <li>Meet <code>FixedUpdate</code> and applying forces</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#what" class="toc-link">What a Rigidbody Does</a></li>
+                    <li><a href="#settings" class="toc-link">Key Rigidbody Settings</a></li>
+                    <li><a href="#vs" class="toc-link">Physics vs Transform Movement</a></li>
+                    <li><a href="#force" class="toc-link">Applying Forces</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="what" class="lesson-section">
+                <h2>What a Rigidbody Does</h2>
+                <p>A <strong>Rigidbody</strong> hands an object over to Unity's physics engine. Suddenly it has weight, it falls under gravity, it can be pushed, and it collides realistically with other physics objects. These cubes and spheres have physics — they fell, landed, and came to rest on the floor:</p>
+                <figure>
+                    <img src="images/physics-fall.png" alt="A real Unity render of stacked red, green, and blue cubes and two spheres resting on a floor.">
+                    <figcaption>Figure 1: Objects at rest on the floor (real render). With Rigidbodies + colliders, gravity pulls them down and the floor holds them up.</figcaption>
+                </figure>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Rigidbody:</strong> the component that lets Unity's physics engine control an object's movement — gravity, forces, momentum, and collision response. Without it, an object ignores physics entirely.</p>
+                </div>
+                <p>To add one: select an object, <strong>Add Component ▸ Rigidbody</strong>. Press Play and — if it's above the ground — it falls.</p>
+            </section>
+
+            <section id="settings" class="lesson-section">
+                <h2>Key Rigidbody Settings</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Mass</strong></td><td>How heavy the object is (affects pushing, not fall speed).</td></tr>
+                            <tr><td><strong>Use Gravity</strong></td><td>Whether gravity pulls it down. Untick to make it float.</td></tr>
+                            <tr><td><strong>Is Kinematic</strong></td><td>If ticked, physics won't move it — you move it by code/Transform instead, but it still affects others.</td></tr>
+                            <tr><td><strong>Constraints</strong></td><td>Freeze position or rotation on chosen axes (e.g. stop a capsule from tipping over).</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 Fun fact:</strong> in a vacuum, heavy and light objects fall at the <em>same</em> speed. Unity models this too — Mass changes how hard it is to <em>push</em> something, not how fast it falls.</blockquote>
+            </section>
+
+            <section id="vs" class="lesson-section">
+                <h2>Physics vs Transform Movement</h2>
+                <p>You now have two ways to move things. Choosing the right one avoids a lot of bugs:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th></th><th>Transform (Translate)</th><th>Physics (Rigidbody)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Collisions</td><td>Ignores them — walks through walls</td><td>Respects them — bumps and stops</td></tr>
+                            <tr><td>Gravity</td><td>No</td><td>Yes</td></tr>
+                            <tr><td>Best for</td><td>UI, simple movers, triggers</td><td>Anything that should feel solid and physical</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ Don't mix carelessly</h4>
+                    <p>If an object has a Rigidbody, prefer moving it with physics (or set <em>Is Kinematic</em>). Setting <code>transform.position</code> directly on a physics object every frame can fight the engine and cause jitter or tunnelling through walls.</p>
+                </div>
+            </section>
+
+            <section id="force" class="lesson-section">
+                <h2>Applying Forces</h2>
+                <p>To push a Rigidbody in code, grab it and call <code>AddForce</code>. Physics code goes in <code>FixedUpdate()</code> — Unity's steady physics heartbeat — not <code>Update()</code>:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Jumper : MonoBehaviour
+{
+    public float jumpForce = 5f;
+    private Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent&lt;Rigidbody&gt;();   // grab our own Rigidbody
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+}</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>FixedUpdate():</strong> like Update, but runs on a fixed physics timestep (not tied to frame rate). Put physics reads/forces here for stable results. (Reading one-shot input like GetKeyDown stays in Update, as above.)</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Let it fall &amp; stack</h3>
+                    <ol>
+                        <li>Make a floor (Plane) and raise a few Cubes above it (Position Y = 3, 4, 5).</li>
+                        <li>Add a <strong>Rigidbody</strong> to each cube.</li>
+                        <li>Press Play — watch them fall and land on the floor. Give them slightly different X/Z so they tumble into a little pile.</li>
+                        <li>Select a cube and untick <strong>Use Gravity</strong> — press Play; it now hangs in the air.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 My cube falls straight through the floor</summary>
+                        <p>The floor needs a <strong>collider</strong> (a Plane has one by default; a custom floor might not). We cover colliders next lesson — for now use a default Plane as the floor.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does adding a Rigidbody do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It hands the object to the physics engine (gravity, forces, collisions).">A) Lets the physics engine control it — gravity, forces, collisions</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not about visibility.">B) Makes the object visible</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Colour is the material's job.">C) Changes its colour</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Where should you apply physics forces?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Start runs once.">A) Start()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! FixedUpdate is the physics heartbeat.">B) FixedUpdate()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="LateUpdate is for cameras.">C) LateUpdate()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>Rigidbody</strong> gives an object real physics — gravity, forces, collisions.</li>
+                        <li>Key settings: <strong>Mass</strong>, <strong>Use Gravity</strong>, <strong>Is Kinematic</strong>, <strong>Constraints</strong>.</li>
+                        <li>Use physics movement for solid objects; Transform movement ignores collisions.</li>
+                        <li>Apply forces with <code>AddForce</code> in <code>FixedUpdate()</code>.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Physics needs shapes to collide with. <strong>Lesson 5.2</strong> covers colliders — and the magic checkbox that turns a wall into a walk-through trigger zone.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Gravity is on!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_15.html" class="prev-lesson">← Previous: Making the Camera Follow</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_17.html" class="next-lesson">Next: Colliders &amp; Triggers →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

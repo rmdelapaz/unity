@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The single most important idea in Unity: GameObjects are containers, and Components give them their features. A beginner-friendly deep dive.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.1: GameObjects &amp; the Component Model — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2: GameObjects &amp; Components</a></li>
+            <li aria-current="page">Lesson 2.1: GameObjects &amp; the Component Model</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧩 Lesson 2.1: GameObjects &amp; the Component Model</h1>
+                <p class="lead">This is the big one. Almost everything in a Unity game is a <strong>GameObject</strong>, and every GameObject is built from <strong>components</strong>. Understand this one idea and Unity suddenly makes sense.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what a <strong>GameObject</strong> is (a container)</li>
+                        <li>Explain what a <strong>Component</strong> is (a feature you attach)</li>
+                        <li>Add and remove components in the Inspector</li>
+                        <li>See why this "mix and match" design makes Unity so flexible</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span>
+                    <span class="toc-label">In This Lesson</span>
+                    <span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#everything" class="toc-link">Everything Is a GameObject</a></li>
+                        <li><a href="#components" class="toc-link">Components Are the Features</a></li>
+                        <li><a href="#analogy" class="toc-link">The Backpack Analogy</a></li>
+                        <li><a href="#addremove" class="toc-link">Adding &amp; Removing Components</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <section id="everything" class="lesson-section">
+                <h2>Everything Is a GameObject</h2>
+                <p>The cube you made, the floor, the camera, the light — in the Hierarchy they're all the same <em>kind</em> of thing: a <strong>GameObject</strong>. Characters, cameras, lights, sound sources, even invisible helpers are all GameObjects. Here are four different primitives, and despite looking different, each is just a GameObject:</p>
+                <figure>
+                    <img src="images/primitives.png" alt="A real Unity render showing a cube, sphere, capsule, and cylinder lined up on a grey floor.">
+                    <figcaption>Figure 1: A cube, sphere, capsule, and cylinder — real renders. Different shapes, but every one is a GameObject.</figcaption>
+                </figure>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>GameObject:</strong> the basic object in a Unity scene. On its own it does almost nothing — it's an empty container with a name and a position. Its abilities come entirely from the components attached to it.</p>
+                </div>
+            </section>
+
+            <section id="components" class="lesson-section">
+                <h2>Components Are the Features</h2>
+                <p>If a GameObject is an empty container, <strong>components</strong> are the features you drop into it. Each component adds one specific ability. You saw several in the Inspector during the tour:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Component</th><th>What it gives the GameObject</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Transform</strong></td><td>A position, rotation, and scale. Every GameObject has one — it can't be removed.</td></tr>
+                            <tr><td><strong>Mesh Filter + Mesh Renderer</strong></td><td>A 3D shape and the ability to be drawn (visible).</td></tr>
+                            <tr><td><strong>Collider</strong></td><td>A physical boundary so it can be bumped into.</td></tr>
+                            <tr><td><strong>Rigidbody</strong></td><td>Physics — gravity and forces (Module 5).</td></tr>
+                            <tr><td><strong>Audio Source</strong></td><td>The ability to play sounds.</td></tr>
+                            <tr><td><strong>Script</strong> (your C#)</td><td>Any custom behaviour you invent (Module 3).</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote>
+                    <strong>💡 The key insight:</strong> a GameObject <em>is what its components make it</em>. A camera GameObject is "a GameObject with a Camera component." A player is "a GameObject with a mesh, a collider, a Rigidbody, and a movement script." You compose behaviour by stacking components.
+                </blockquote>
+            </section>
+
+            <section id="analogy" class="lesson-section">
+                <h2>The Backpack Analogy</h2>
+                <p>Think of a GameObject as an empty <strong>backpack</strong>. The backpack itself doesn't do much — but you can put things in it. Put a water bottle in, and now it carries water. Add a laptop, and now it carries a computer. Components are the things you put in the backpack; each one adds a capability.</p>
+                <div class="mermaid">
+                    graph TD
+                    GO[GameObject: 'Player'<br/>the empty backpack]
+                    GO --> T[Transform<br/>where it is]
+                    GO --> M[Mesh Renderer<br/>how it looks]
+                    GO --> C[Collider<br/>its physical bounds]
+                    GO --> R[Rigidbody<br/>gravity &amp; forces]
+                    GO --> S[PlayerMovement.cs<br/>your behaviour]
+                </div>
+                <p>Remove the movement script and the player stops responding to keys, but it's still there, still visible, still solid. Each component is independent — that's the flexibility.</p>
+            </section>
+
+            <section id="addremove" class="lesson-section">
+                <h2>Adding &amp; Removing Components</h2>
+                <p>You manage components entirely in the <strong>Inspector</strong>:</p>
+                <ul>
+                    <li><strong>Add:</strong> select the GameObject, scroll to the bottom of the Inspector, click <strong>Add Component</strong>, and search for what you want (e.g. "Rigidbody").</li>
+                    <li><strong>Remove:</strong> click the ⋮ (three dots) on a component's header and choose <strong>Remove Component</strong>.</li>
+                    <li><strong>Disable temporarily:</strong> untick the checkbox at the top-left of a component to switch it off without deleting it.</li>
+                </ul>
+                <div class="card card-warning">
+                    <h4>⚠️ Watch Out</h4>
+                    <p>The <strong>Transform</strong> component can't be removed — every GameObject must exist somewhere in space. That's the one component you'll never see a remove option for.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Inspect and add</h3>
+                    <ol>
+                        <li>Open your scene from Lesson 1.4 and select the <strong>Cube</strong>.</li>
+                        <li>In the Inspector, list its components. You should see Transform, Mesh Filter, Mesh Renderer, and Box Collider.</li>
+                        <li>Click <strong>Add Component</strong>, search for <strong>Rigidbody</strong>, and add it.</li>
+                        <li>Press <strong>Play</strong>. The cube now falls — because a Rigidbody gave it gravity! Press Play again to stop.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 What just happened?</summary>
+                        <p>You changed the cube's behaviour without writing any code — purely by adding a component. That's the component model in action. (More on Rigidbody in Module 5.)</p>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does a GameObject do on its own, with no components except Transform?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It's essentially an empty container with a position.">A) Almost nothing — it's an empty container with a position</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Behaviour comes from components you add.">B) It automatically moves and reacts</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Visibility needs a Mesh Renderer.">C) It's always visible with physics</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which component can never be removed from a GameObject?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Not every object is visible.">A) Mesh Renderer</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Every GameObject must have a Transform.">B) Transform</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Plenty of objects have no physics.">C) Rigidbody</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Nearly everything in a scene is a <strong>GameObject</strong> — an empty container.</li>
+                        <li><strong>Components</strong> give GameObjects their features; you stack them to compose behaviour.</li>
+                        <li>You add, remove, and disable components in the <strong>Inspector</strong>.</li>
+                        <li>The <strong>Transform</strong> is the one component every GameObject always has.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>The component every object shares is the Transform. In <strong>Lesson 2.2</strong> we'll master it: position, rotation, and scale.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Core concept unlocked!</h3>
+                    <p>GameObjects + Components is the mental model behind all of Unity. You've got it.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_04.html" class="prev-lesson">← Previous: Creating &amp; Saving Your First Scene</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_06.html" class="next-lesson">Next: The Transform →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

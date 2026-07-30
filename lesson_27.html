@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Keep your Unity project tidy: a sensible folder structure, clear names, prefabs, and light comments — habits that scale as projects grow.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.1: Organizing Your Project — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8: Build &amp; Share</a></li>
+            <li aria-current="page">Lesson 8.1: Organizing Your Project</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🗂️ Lesson 8.1: Organizing Your Project</h1>
+                <p class="lead">A tidy project is a joy to work in; a messy one grinds you to a halt. Before we build and ship, let's set up the simple organization habits that keep projects manageable as they grow.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Set up a sensible <strong>folder structure</strong> in Assets</li>
+                        <li>Adopt clear, consistent <strong>naming</strong></li>
+                        <li>Lean on <strong>prefabs</strong> and tidy scenes</li>
+                        <li>Add light, helpful <strong>comments</strong> to scripts</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 25 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#why" class="toc-link">Why It Matters</a></li>
+                    <li><a href="#folders" class="toc-link">A Folder Structure</a></li>
+                    <li><a href="#naming" class="toc-link">Naming Things</a></li>
+                    <li><a href="#comments" class="toc-link">Light Comments</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="why" class="lesson-section">
+                <h2>Why It Matters</h2>
+                <p>Right now your project is small enough to hold in your head. In a month, with 40 scripts and 100 assets, "where did I put that?" becomes a daily tax. Ten minutes of organization now saves hours later — and it makes your project pleasant to return to.</p>
+                <blockquote><strong>💡 Organize as you go,</strong> not "later." Later never comes. Drop each new asset into the right folder the moment you make it.</blockquote>
+            </section>
+
+            <section id="folders" class="lesson-section">
+                <h2>A Folder Structure</h2>
+                <p>Everything you make lives under <code>Assets</code>. Group by type with a handful of folders:</p>
+                <div class="mermaid">
+                    graph TD
+                    A[Assets] --> S[Scenes]
+                    A --> SC[Scripts]
+                    A --> P[Prefabs]
+                    A --> M[Materials]
+                    A --> AU[Audio]
+                    A --> AR[Art / Models]
+                </div>
+                <p>Create folders with right-click ▸ <strong>Create ▸ Folder</strong> in the Project panel, then drag existing assets into them. Move the collectible into <code>Prefabs</code>, scripts into <code>Scripts</code>, and so on.</p>
+                <div class="card card-warning">
+                    <h4>⚠️ Move assets inside Unity, not in the file explorer</h4>
+                    <p>Always drag/rename assets <em>in Unity's Project panel</em>. Unity tracks links via hidden <code>.meta</code> files; moving files in Windows Explorer can break references. Inside Unity, moves are safe.</p>
+                </div>
+            </section>
+
+            <section id="naming" class="lesson-section">
+                <h2>Naming Things</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Do</th><th>Avoid</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>PlayerMovement</code>, <code>Collectible</code></td><td><code>NewBehaviourScript</code>, <code>Script1</code></td></tr>
+                            <tr><td><code>Mat_Floor</code>, <code>Mat_Star</code></td><td><code>New Material</code>, <code>mat (3)</code></td></tr>
+                            <tr><td><code>SFX_Collect</code>, <code>Music_Loop</code></td><td><code>audio</code>, <code>sound_final_FINAL</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Pick a style and stick to it. Descriptive names mean you find things by reading, not hunting. Prefixes like <code>Mat_</code> and <code>SFX_</code> group related assets alphabetically.</p>
+            </section>
+
+            <section id="comments" class="lesson-section">
+                <h2>Light Comments</h2>
+                <p>A comment explains <em>why</em>, so future-you understands past-you. Add them where intent isn't obvious — don't narrate every line:</p>
+                <pre><code class="language-csharp">// Freeze rotation so the capsule can't tip over when it bumps walls
+rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+public float speed = 5f;   // tuned for a gentle, beginner-friendly pace</code></pre>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Good names reduce the need for comments. <code>float jumpForce</code> needs no comment; a surprising number or a non-obvious trick does. Comment the surprises.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Tidy up</h3>
+                    <ol>
+                        <li>Create the folders: Scenes, Scripts, Prefabs, Materials, Audio.</li>
+                        <li>Drag every existing asset into its correct folder (inside Unity).</li>
+                        <li>Rename anything vague — no <code>New Material</code> or <code>Script1</code> left.</li>
+                        <li>Add one clarifying comment to each of your scripts.</li>
+                    </ol>
+                    <details>
+                        <summary>✅ Success check</summary>
+                        <p>Your Assets folder has clear subfolders, every asset has a descriptive name, and nothing is loose at the top level except the folders themselves.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> How should you move or rename assets?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Inside Unity's Project panel, so references stay intact.">A) Inside Unity's Project panel</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This can break Unity's references.">B) In Windows Explorer / Finder</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no need to delete and remake.">C) Delete and recreate them</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> When should you organize your project?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! As you go — later rarely happens.">A) As you go — file each asset when you make it</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'Later' tends to never arrive.">B) Only at the very end</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Organization always helps.">C) Never — it doesn't matter</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Group assets into folders (Scenes, Scripts, Prefabs, Materials, Audio).</li>
+                        <li>Use clear, consistent names; prefixes like <code>Mat_</code> group things.</li>
+                        <li>Move/rename assets <em>inside Unity</em> to keep references intact.</li>
+                        <li>Comment the <em>why</em>, not every line — good names do most of the work.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Tidy project, finished game — time for the big moment. <strong>Lesson 8.2</strong> builds your game into a real file you can run and share.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Neat and tidy!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_26.html" class="prev-lesson">← Previous: Adding Polish</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_28.html" class="next-lesson">Next: Building Your Game →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

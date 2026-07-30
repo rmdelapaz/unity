@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Variables store data in your scripts. Learn C# types (int, float, string, bool) and how public fields become editable sliders and boxes in the Inspector.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.2: Variables &amp; Public Inspector Fields — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3: C# Scripting Basics</a></li>
+            <li aria-current="page">Lesson 3.2: Variables &amp; Public Inspector Fields</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 3.2: Variables &amp; Public Inspector Fields</h1>
+                <p class="lead">A <strong>variable</strong> is a named box that holds a value — a number, some text, a yes/no. And here's Unity's magic touch: make a variable <strong>public</strong> and it shows up in the Inspector for you to tweak without touching code.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Understand what a variable is and how to declare one</li>
+                        <li>Know the four everyday types: <code>int</code>, <code>float</code>, <code>string</code>, <code>bool</code></li>
+                        <li>Expose a variable in the Inspector using <strong>public</strong> or <strong>[SerializeField]</strong></li>
+                        <li>Change a value in the Inspector and see it affect the script</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#what" class="toc-link">What Is a Variable?</a></li>
+                    <li><a href="#types" class="toc-link">The Four Everyday Types</a></li>
+                    <li><a href="#public" class="toc-link">Public Fields in the Inspector</a></li>
+                    <li><a href="#serialize" class="toc-link">public vs [SerializeField]</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="what" class="lesson-section">
+                <h2>What Is a Variable?</h2>
+                <p>A variable is a labelled container for a value. You declare it by stating its <em>type</em>, its <em>name</em>, and (optionally) a starting value:</p>
+                <pre><code class="language-csharp">int score = 0;          // a whole number, starts at 0
+float speed = 5.0f;     // a decimal number, starts at 5
+string playerName = "Ada";  // some text
+bool isAlive = true;    // true or false</code></pre>
+                <p>Later you can read it or change it:</p>
+                <pre><code class="language-csharp">score = score + 10;     // score is now 10
+speed = 8f;             // change the speed
+isAlive = false;        // the player died</code></pre>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Variable:</strong> a named place in memory that stores a value of a specific type. The type decides what kind of value it can hold and what you can do with it.</p>
+                </div>
+            </section>
+
+            <section id="types" class="lesson-section">
+                <h2>The Four Everyday Types</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Type</th><th>Holds</th><th>Example</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>int</code></td><td>Whole numbers</td><td><code>int lives = 3;</code></td></tr>
+                            <tr><td><code>float</code></td><td>Decimal numbers (note the <code>f</code>)</td><td><code>float speed = 4.5f;</code></td></tr>
+                            <tr><td><code>string</code></td><td>Text (in quotes)</td><td><code>string name = "Hero";</code></td></tr>
+                            <tr><td><code>bool</code></td><td>true / false</td><td><code>bool hasKey = false;</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>⚠️ The <code>f</code> on floats:</strong> C# needs an <code>f</code> after decimal numbers used for floats — <code>5.0f</code>, not <code>5.0</code>. Forgetting it is the #1 beginner error message in Unity. If you see "cannot convert double to float," add the <code>f</code>.</blockquote>
+            </section>
+
+            <section id="public" class="lesson-section">
+                <h2>Public Fields in the Inspector</h2>
+                <p>Here's Unity's superpower. Mark a variable <code>public</code> and it appears in the Inspector as an editable field — no recompiling to try new values:</p>
+                <pre><code class="language-csharp">using UnityEngine;
+
+public class Mover : MonoBehaviour
+{
+    public float speed = 5f;   // shows up in the Inspector!
+    public int points = 100;   // so does this
+}</code></pre>
+                <p>Attach this and the Inspector shows a <strong>Speed</strong> box (5) and a <strong>Points</strong> box (100). Type a new number and the script uses it immediately. This lets designers tune the game without reading code.</p>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Values you set in the Inspector <em>override</em> the value written in the script. If your script says <code>speed = 5f</code> but the Inspector shows <code>12</code>, the game uses 12. The Inspector wins — handy, but remember it when a value seems "wrong."</p>
+                </div>
+            </section>
+
+            <section id="serialize" class="lesson-section">
+                <h2>public vs [SerializeField]</h2>
+                <p>Making everything <code>public</code> works, but <code>public</code> also lets <em>other scripts</em> change the value, which can cause bugs. The tidy professional habit is to keep the variable <strong>private</strong> but still show it in the Inspector using <code>[SerializeField]</code>:</p>
+                <pre><code class="language-csharp">[SerializeField] private float speed = 5f;
+// Private (safe from other scripts) but still editable in the Inspector.</code></pre>
+                <p>For this course, either style is fine — just know that <code>[SerializeField] private</code> is what you'll see in most professional code.</p>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Tunable values</h3>
+                    <ol>
+                        <li>Create a script <code>Mover</code> with a <code>public float speed = 5f;</code>.</li>
+                        <li>In <code>Start()</code>, print it: <code>Debug.Log("Speed is " + speed);</code></li>
+                        <li>Attach it, then in the Inspector change <strong>Speed</strong> to <code>12</code>.</li>
+                        <li>Press Play and read the Console — it prints <code>Speed is 12</code>, proving the Inspector value won.</li>
+                    </ol>
+                    <details>
+                        <summary>✅ Success check</summary>
+                        <p>The Console shows the Inspector's number (12), not the script's 5. You've just seen public fields in action.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which type should you use for a decimal speed value?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="int holds whole numbers only.">A) int</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! float holds decimals (with an f).">B) float</button>
+                            <button class="quiz-option" data-correct="false" data-hint="string is text.">C) string</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> You set Speed to 12 in the Inspector, but the script declares <code>speed = 5f</code>. What value runs?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The Inspector value overrides the script default.">A) 12 — the Inspector value wins</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The script's 5 is only the default.">B) 5 — the script always wins</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not an average.">C) 8.5 — the average</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>variable</strong> stores a typed value; declare it with type + name.</li>
+                        <li>Everyday types: <code>int</code>, <code>float</code> (add <code>f</code>!), <code>string</code>, <code>bool</code>.</li>
+                        <li><strong>public</strong> fields appear in the Inspector; the Inspector value overrides the script default.</li>
+                        <li><strong>[SerializeField] private</strong> is the tidy way to expose a value while keeping it protected.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Now let's actually <em>move</em> something. <strong>Lesson 3.3</strong> uses code to make an object glide and spin — with a crucial trick for smooth motion.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Data under your command!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_09.html" class="prev-lesson">← Previous: Your First Script</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_11.html" class="next-lesson">Next: Moving Objects with Code →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

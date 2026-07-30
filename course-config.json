@@ -1,0 +1,151 @@
+{
+  "course": {
+    "title": "Unity Fundamentals",
+    "subtitle": "Build Your First Games with Unity 6",
+    "description": "A hands-on, absolute-beginner course for the Unity game engine. Start from zero — no coding or game-dev experience needed — and learn the Editor, GameObjects and components, C# scripting, input, physics, UI, and audio by building a real mini-game step by step.",
+    "author": {
+      "name": "Ray De La Paz",
+      "email": "contact via website",
+      "website": "https://rays-home.netlify.app/",
+      "bio": "Technical trainer, full-stack developer, and course developer with 30+ years of experience."
+    },
+    "version": "1.0.0",
+    "lastUpdated": "2026-07-29",
+    "language": "en",
+    "difficulty": "beginner",
+    "estimatedHours": 18,
+    "tags": ["unity", "unity6", "game development", "c#", "beginner", "game engine"]
+  },
+
+  "branding": {
+    "primaryColor": "#3b82f6",
+    "secondaryColor": "#f8fafc",
+    "accentColor": "#6366f1",
+    "fontFamily": "Segoe UI, system-ui, -apple-system, sans-serif",
+    "logo": "images/logo.png",
+    "favicon": "favicon.png"
+  },
+
+  "navigation": {
+    "showBreadcrumbs": true,
+    "showProgressBar": true,
+    "showLessonNav": true,
+    "showSearch": true,
+    "showThemeToggle": true,
+    "keyboardShortcuts": true,
+    "externalLinks": [
+      { "label": "Ray's House of Fun", "url": "https://rays-home.netlify.app/" },
+      { "label": "Contact", "url": "https://rays-home.netlify.app/contact" }
+    ]
+  },
+
+  "engine": {
+    "name": "Unity",
+    "version": "6000.5.4f1",
+    "versionLabel": "Unity 6",
+    "renderPipeline": "Universal Render Pipeline (URP)",
+    "language": "C#"
+  },
+
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "Meet Unity",
+      "description": "Install Unity and get comfortable in the Editor — the workspace where you'll build everything.",
+      "lessons": [
+        { "id": "lesson-1-1", "title": "What Is Unity & What You'll Build", "filename": "lesson_01.html", "duration": "20 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-2", "title": "Installing Unity Hub & Unity 6", "filename": "lesson_02.html", "duration": "30 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-3", "title": "The Unity Editor Interface", "filename": "lesson_03.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-4", "title": "Creating & Saving Your First Scene", "filename": "lesson_04.html", "duration": "30 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-2",
+      "title": "GameObjects & Components",
+      "description": "The core idea behind everything in Unity: objects made of components you configure.",
+      "lessons": [
+        { "id": "lesson-2-1", "title": "GameObjects & the Component Model", "filename": "lesson_05.html", "duration": "30 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-2", "title": "The Transform: Position, Rotation, Scale", "filename": "lesson_06.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-3", "title": "Primitives, Meshes & Materials", "filename": "lesson_07.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-4", "title": "Prefabs: Reusable GameObjects", "filename": "lesson_08.html", "duration": "35 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-3",
+      "title": "C# Scripting Basics",
+      "description": "Write your first code and make objects do things — gently, from the ground up.",
+      "lessons": [
+        { "id": "lesson-3-1", "title": "Your First Script: MonoBehaviour", "filename": "lesson_09.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-2", "title": "Variables & Public Inspector Fields", "filename": "lesson_10.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-3", "title": "Moving Objects with Code", "filename": "lesson_11.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-4", "title": "Debugging with the Console", "filename": "lesson_12.html", "duration": "30 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-4",
+      "title": "Input & Player Control",
+      "description": "Read the keyboard and mouse, move a character, and follow it with the camera.",
+      "lessons": [
+        { "id": "lesson-4-1", "title": "Reading Player Input", "filename": "lesson_13.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-4-2", "title": "Moving a Player Character", "filename": "lesson_14.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-4-3", "title": "Making the Camera Follow", "filename": "lesson_15.html", "duration": "30 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-5",
+      "title": "Physics & Collisions",
+      "description": "Add gravity, make things collide, and react to those collisions in code.",
+      "lessons": [
+        { "id": "lesson-5-1", "title": "Rigidbodies & Gravity", "filename": "lesson_16.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-5-2", "title": "Colliders & Triggers", "filename": "lesson_17.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-5-3", "title": "Handling Collisions in Code", "filename": "lesson_18.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-5-4", "title": "Building a Collectible", "filename": "lesson_19.html", "duration": "40 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-6",
+      "title": "UI & Feedback",
+      "description": "Show the player what's happening — text, buttons, a live score, and sound.",
+      "lessons": [
+        { "id": "lesson-6-1", "title": "Building a UI Canvas", "filename": "lesson_20.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-6-2", "title": "A Live Score Counter", "filename": "lesson_21.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-6-3", "title": "Adding Sound & Music", "filename": "lesson_22.html", "duration": "35 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-7",
+      "title": "Mini-Game Project",
+      "description": "Put it all together into a small, complete, playable game.",
+      "lessons": [
+        { "id": "lesson-7-1", "title": "Planning Your Mini-Game", "filename": "lesson_23.html", "duration": "25 minutes", "difficulty": "beginner" },
+        { "id": "lesson-7-2", "title": "Building the Level", "filename": "lesson_24.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-7-3", "title": "Win & Lose Conditions", "filename": "lesson_25.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-7-4", "title": "Adding Polish: Particles & Post-Processing", "filename": "lesson_26.html", "duration": "40 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-8",
+      "title": "Build & Share",
+      "description": "Keep your project tidy, build a real game file, and plan where to go next.",
+      "lessons": [
+        { "id": "lesson-8-1", "title": "Organizing Your Project", "filename": "lesson_27.html", "duration": "25 minutes", "difficulty": "beginner" },
+        { "id": "lesson-8-2", "title": "Building Your Game (WebGL & Desktop)", "filename": "lesson_28.html", "duration": "35 minutes", "difficulty": "beginner" },
+        { "id": "lesson-8-3", "title": "Where to Go Next", "filename": "lesson_29.html", "duration": "20 minutes", "difficulty": "beginner" }
+      ]
+    }
+  ],
+
+  "features": {
+    "codeHighlighting": true,
+    "copyCodeButton": true,
+    "progressTracking": true,
+    "offlineSupport": false,
+    "responsiveDesign": true,
+    "accessibility": true,
+    "printFriendly": true,
+    "searchEnabled": true,
+    "darkMode": true,
+    "mermaidDiagrams": true,
+    "svgDarkModeSupport": true
+  }
+}

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Write your first Unity C# script. Learn what a MonoBehaviour is and how the Start and Update methods drive behaviour — for absolute beginners.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.1: Your First Script — MonoBehaviour — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3: C# Scripting Basics</a></li>
+            <li aria-current="page">Lesson 3.1: Your First Script</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>💻 Lesson 3.1: Your First Script — MonoBehaviour</h1>
+                <p class="lead">Time to write code! Don't worry — we go one tiny step at a time. A <strong>script</strong> is just another component, one whose behaviour <em>you</em> define. Let's make your first one and see it run.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Create a C# script and attach it to a GameObject</li>
+                        <li>Understand what a <strong>MonoBehaviour</strong> is</li>
+                        <li>Use the two most important methods: <strong>Start()</strong> and <strong>Update()</strong></li>
+                        <li>Print your first message to the Console</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#script-is" class="toc-link">A Script Is a Component</a></li>
+                    <li><a href="#create" class="toc-link">Creating a Script</a></li>
+                    <li><a href="#anatomy" class="toc-link">Anatomy of the Script</a></li>
+                    <li><a href="#lifecycle" class="toc-link">Start vs Update</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="script-is" class="lesson-section">
+                <h2>A Script Is a Component</h2>
+                <p>Remember the component model? A script is simply a component you write yourself. Attach it to a GameObject and it can move that object, respond to input, keep score — anything. Unity uses the language <strong>C#</strong> (say "C-sharp").</p>
+                <blockquote><strong>💡 You don't need prior programming.</strong> We'll explain every keyword the first time it appears. Type the examples yourself — that's how it sticks.</blockquote>
+            </section>
+
+            <section id="create" class="lesson-section">
+                <h2>Creating a Script</h2>
+                <ol>
+                    <li>Select a GameObject (say your Cube).</li>
+                    <li>In the Inspector, click <strong>Add Component ▸ New Script</strong>.</li>
+                    <li>Name it <code>Hello</code> and click <strong>Create and Add</strong>. Unity makes a <code>Hello.cs</code> file and attaches it.</li>
+                    <li>Double-click the script to open it in your code editor (Visual Studio / VS Code).</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Naming rule</h4>
+                    <p>The file name and the class name inside must match exactly. If the file is <code>Hello.cs</code>, the class must be <code>Hello</code>. Renaming one without the other breaks the script.</p>
+                </div>
+            </section>
+
+            <section id="anatomy" class="lesson-section">
+                <h2>Anatomy of the Script</h2>
+                <p>A fresh Unity script looks like this. Let's read it line by line:</p>
+                <pre><code class="language-csharp">using UnityEngine;                 // gives us access to Unity's features
+
+public class Hello : MonoBehaviour  // our component, based on MonoBehaviour
+{
+    // Start is called once, before the first frame
+    void Start()
+    {
+        Debug.Log("Hello, Unity!"); // print a message to the Console
+    }
+
+    // Update is called once per frame, over and over
+    void Update()
+    {
+
+    }
+}</code></pre>
+                <ul>
+                    <li><code>using UnityEngine;</code> — unlocks Unity's toolbox (like <code>Debug</code>, <code>Transform</code>).</li>
+                    <li><code>public class Hello : MonoBehaviour</code> — defines our component. The <code>: MonoBehaviour</code> part is what lets it attach to a GameObject.</li>
+                    <li><code>Start()</code> and <code>Update()</code> — special methods Unity calls automatically (more below).</li>
+                    <li><code>Debug.Log("...")</code> — writes text to the Console.</li>
+                    <li>Every statement ends with a semicolon <code>;</code> and code lives inside <code>{ curly braces }</code>.</li>
+                </ul>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>MonoBehaviour:</strong> the base class every Unity script builds on. Inheriting from it lets your class be attached to a GameObject as a component and receive Unity's automatic method calls like Start and Update.</p>
+                </div>
+            </section>
+
+            <section id="lifecycle" class="lesson-section">
+                <h2>Start vs Update — the Two You'll Use Most</h2>
+                <p>Unity calls these for you automatically once the game is running:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Method</th><th>When it runs</th><th>Use it for…</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Start()</strong></td><td>Once, at the beginning</td><td>Setup: initial values, finding things</td></tr>
+                            <tr><td><strong>Update()</strong></td><td>Every single frame (dozens of times per second)</td><td>Ongoing work: movement, input, checks</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mermaid">
+                    graph TD
+                    A[Press Play] --> B[Start called once]
+                    B --> C[Update called this frame]
+                    C --> D[Update called next frame]
+                    D --> E[...every frame until Stop]
+                </div>
+                <blockquote><strong>💡 A frame</strong> is one drawn image of the game. Games draw many frames per second, so <code>Update()</code> runs many times per second — perfect for smooth movement.</blockquote>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Say hello, then count</h3>
+                    <ol>
+                        <li>Create the <code>Hello</code> script above and attach it to any GameObject.</li>
+                        <li>Press <strong>Play</strong> and open the <strong>Console</strong> (Window ▸ General ▸ Console). You should see <code>Hello, Unity!</code> printed once.</li>
+                        <li>Now add a line inside <code>Update()</code> to print every frame:</li>
+                    </ol>
+                    <pre><code class="language-csharp">void Update()
+{
+    Debug.Log("A new frame just happened!");
+}</code></pre>
+                    <p>Press Play again — the message now floods in continuously, one per frame. Press Stop.</p>
+                    <details>
+                        <summary>💡 Nothing printed?</summary>
+                        <p>Make sure the script is attached to a GameObject that's active in the scene, that you pressed Play, and that the Console window is open. Check the Console for red error text too.</p>
+                    </details>
+                    <details>
+                        <summary>✅ What this teaches</summary>
+                        <p>Start runs once (one hello); Update runs every frame (a flood). That difference is the heartbeat of every Unity game.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> How often does <code>Update()</code> run?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's Start().">A) Once at the start</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Update runs every frame.">B) Every frame, repeatedly</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It runs automatically, not on click.">C) Only when you click the object</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What makes a C# class attachable to a GameObject as a component?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Inheriting from MonoBehaviour.">A) It inherits from MonoBehaviour</button>
+                            <button class="quiz-option" data-correct="false" data-hint="using is just an import.">B) The 'using UnityEngine;' line alone</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Semicolons end statements, not enable attachment.">C) Ending lines with semicolons</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>script</strong> is a component you write in <strong>C#</strong>.</li>
+                        <li>Scripts inherit from <strong>MonoBehaviour</strong> so they can attach to GameObjects.</li>
+                        <li><strong>Start()</strong> runs once; <strong>Update()</strong> runs every frame.</li>
+                        <li><strong>Debug.Log()</strong> prints to the Console.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Scripts get powerful when they hold data. <strong>Lesson 3.2</strong> introduces variables — and the neat trick of editing them right in the Inspector.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You wrote code that ran!</h3>
+                    <p>That's a genuine milestone. It only gets more fun from here.</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_08.html" class="prev-lesson">← Previous: Prefabs</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_10.html" class="next-lesson">Next: Variables &amp; Public Inspector Fields →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

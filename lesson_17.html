@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Colliders give objects a physical boundary. Learn solid colliders vs trigger zones (Is Trigger) — the basis of walls, floors, and pickups.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.2: Colliders &amp; Triggers — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5: Physics &amp; Collisions</a></li>
+            <li aria-current="page">Lesson 5.2: Colliders &amp; Triggers</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧱 Lesson 5.2: Colliders &amp; Triggers</h1>
+                <p class="lead">A <strong>collider</strong> is an object's physical boundary — what makes a floor solid and a wall stoppable. Flip one setting and that same boundary becomes an invisible <strong>trigger</strong> zone you can walk into. Both are everywhere in games.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Understand what a <strong>collider</strong> is and the common types</li>
+                        <li>Know why a floor stops a falling object</li>
+                        <li>Turn a collider into a <strong>trigger</strong> with <em>Is Trigger</em></li>
+                        <li>Tell apart a solid collision and a trigger overlap</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#what" class="toc-link">What Is a Collider?</a></li>
+                    <li><a href="#types" class="toc-link">Collider Types</a></li>
+                    <li><a href="#trigger" class="toc-link">Triggers: Is Trigger</a></li>
+                    <li><a href="#rules" class="toc-link">The Collision Rules</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="what" class="lesson-section">
+                <h2>What Is a Collider?</h2>
+                <p>A <strong>collider</strong> is an (invisible) shape that defines an object's physical bounds for the physics engine. It's why the cubes in the last lesson landed <em>on</em> the floor instead of falling forever — the floor's collider blocked them. Primitives come with a matching collider already attached (a Cube has a Box Collider, a Sphere has a Sphere Collider).</p>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Collider:</strong> a component describing an object's physical shape for collision detection. It's separate from the visible mesh — often a simple box or sphere approximating the visual shape, for speed.</p>
+                </div>
+                <blockquote><strong>💡 Two parts to solid physics:</strong> a moving object usually needs a <strong>Rigidbody</strong> (to be moved by physics) <em>and</em> a <strong>Collider</strong> (to have bounds). Static things like floors and walls need just a Collider.</blockquote>
+            </section>
+
+            <section id="types" class="lesson-section">
+                <h2>Collider Types</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Collider</th><th>Shape</th><th>Use for</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Box Collider</strong></td><td>A box</td><td>Crates, walls, platforms</td></tr>
+                            <tr><td><strong>Sphere Collider</strong></td><td>A ball</td><td>Balls, pickups, simple characters</td></tr>
+                            <tr><td><strong>Capsule Collider</strong></td><td>A capsule</td><td>Humanoid characters</td></tr>
+                            <tr><td><strong>Mesh Collider</strong></td><td>The exact mesh</td><td>Complex static shapes (costly — use sparingly)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Prefer simple colliders (Box, Sphere, Capsule) even for detailed models — they're far faster than Mesh Colliders and players rarely notice the difference.</p>
+                </div>
+            </section>
+
+            <section id="trigger" class="lesson-section">
+                <h2>Triggers: the Is Trigger Checkbox</h2>
+                <p>Every collider has an <strong>Is Trigger</strong> checkbox. It flips the collider between two behaviours:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Is Trigger OFF (default)</th><th>Is Trigger ON</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Solid.</strong> Objects physically block each other.</td><td><strong>Ghostly.</strong> Objects pass through, but Unity still tells you they overlapped.</td></tr>
+                            <tr><td>Walls, floors, crates</td><td>Pickups, checkpoints, "you entered the lava" zones</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>A coin you collect is a classic trigger: the player walks <em>through</em> it (no bump), and the overlap tells your code "collect it!" Here's our player near a spinning collectible — that yellow cube will be a trigger:</p>
+                <figure>
+                    <img src="images/collectible.png" alt="A real Unity render of a blue capsule player beside a floating, tilted yellow cube collectible on a floor.">
+                    <figcaption>Figure 1: Player (blue) and a collectible (yellow, real render). The collectible's collider will be a trigger so the player passes through and picks it up.</figcaption>
+                </figure>
+            </section>
+
+            <section id="rules" class="lesson-section">
+                <h2>The Collision Rules (important!)</h2>
+                <p>For Unity to report a collision or trigger, at least one of the two objects involved needs a <strong>Rigidbody</strong>. The usual setup:</p>
+                <div class="mermaid">
+                    graph LR
+                    A[Player<br/>Rigidbody + Collider] -->|walks into| B[Collectible<br/>Collider, Is Trigger ON]
+                    B -->|Unity fires| C[OnTriggerEnter]
+                </div>
+                <ul>
+                    <li><strong>Solid collision:</strong> both have colliders, neither is a trigger, at least one has a Rigidbody → they bump. Unity fires <code>OnCollisionEnter</code>.</li>
+                    <li><strong>Trigger overlap:</strong> one collider has <em>Is Trigger</em> ON, at least one has a Rigidbody → they pass through. Unity fires <code>OnTriggerEnter</code>.</li>
+                </ul>
+                <div class="card card-warning">
+                    <h4>⚠️ "My trigger isn't firing!"</h4>
+                    <p>The #1 cause: <strong>neither object has a Rigidbody</strong>. Add a Rigidbody to the moving object (e.g. the player). That single fix solves most "nothing happens" trigger problems. We write the code next lesson.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Solid vs ghost</h3>
+                    <ol>
+                        <li>Make a floor, a player Cube with a <strong>Rigidbody</strong>, and a wall Cube in front of it.</li>
+                        <li>Nudge the player toward the wall (add a small forward force or move it). It <strong>stops</strong> at the wall — solid colliders.</li>
+                        <li>Select the wall and tick <strong>Is Trigger</strong>. Now the player passes <em>through</em> it.</li>
+                        <li>Notice: it stopped being solid, but Unity could still detect the overlap (we'll use that next lesson).</li>
+                    </ol>
+                    <details>
+                        <summary>💡 The player fell through the floor</summary>
+                        <p>The floor's collider might be set to Is Trigger by accident — untick it. Floors should be solid (Is Trigger OFF).</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does ticking <em>Is Trigger</em> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Objects pass through but overlaps are still detected.">A) Makes the collider non-solid — objects pass through, but overlaps are still detected</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't delete the collider.">B) Removes the collider entirely</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's about physics, not visuals.">C) Hides the object</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Your trigger never fires. Most likely fix?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! At least one object needs a Rigidbody.">A) Add a Rigidbody to the moving object</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Bigger scale won't fix detection.">B) Make the objects bigger</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Colour is unrelated.">C) Change their colour</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>collider</strong> is an object's physical boundary; primitives include one.</li>
+                        <li>Use simple colliders (Box/Sphere/Capsule) over Mesh Colliders where possible.</li>
+                        <li><strong>Is Trigger ON</strong> = pass-through zone; OFF = solid.</li>
+                        <li>Collisions/triggers need at least one <strong>Rigidbody</strong> among the pair.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Detecting overlaps is only useful if your code can react. <strong>Lesson 5.3</strong> writes the collision and trigger event methods.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Solid ground (and ghostly zones)!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_16.html" class="prev-lesson">← Previous: Rigidbodies &amp; Gravity</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_18.html" class="next-lesson">Next: Handling Collisions in Code →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

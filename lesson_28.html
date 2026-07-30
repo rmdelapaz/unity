@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turn your project into a playable game file. Use Build Profiles to make a Windows/Mac build or a WebGL build you can put online.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.2: Building Your Game (WebGL &amp; Desktop) — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+    <style>
+        .ui-figure { margin: var(--spacing-lg) 0; text-align: center; }
+        .ui-figure svg { width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.28); }
+        .ui-figure figcaption { margin-top: var(--spacing-sm); font-size: 0.9rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8: Build &amp; Share</a></li>
+            <li aria-current="page">Lesson 8.2: Building Your Game</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 8.2: Building Your Game (WebGL &amp; Desktop)</h1>
+                <p class="lead">Everything so far runs inside the Editor. A <strong>build</strong> turns your project into a standalone game — a Windows/Mac app, or a WebGL version that runs in a browser. This is how you finally <em>share</em> what you made.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Open <strong>Build Profiles</strong> (formerly Build Settings) and add your scene</li>
+                        <li>Make a <strong>Windows/Mac</strong> desktop build</li>
+                        <li>Make a <strong>WebGL</strong> build for the browser</li>
+                        <li>Know why a WebGL build must be <em>served</em>, not double-clicked</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#what" class="toc-link">What "Building" Means</a></li>
+                    <li><a href="#profiles" class="toc-link">Build Profiles</a></li>
+                    <li><a href="#desktop" class="toc-link">A Desktop Build</a></li>
+                    <li><a href="#webgl" class="toc-link">A WebGL Build</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="what" class="lesson-section">
+                <h2>What "Building" Means</h2>
+                <p>A <strong>build</strong> packages your scenes, assets, and code into a program that runs on its own — no Unity Editor required. You choose a <strong>platform</strong> (Windows, Mac, WebGL, Android…) and Unity produces the files for it.</p>
+                <div class="mermaid">
+                    graph LR
+                    A[Your project<br/>in the Editor] --> B[Choose platform] --> C[Build] --> D[Standalone game<br/>.exe / .app / web page]
+                </div>
+                <blockquote><strong>💡 WebGL is the easiest to share</strong> — it runs in any modern browser, so anyone can play via a link. That's why we installed WebGL Build Support back in Lesson 1.2.</blockquote>
+            </section>
+
+            <section id="profiles" class="lesson-section">
+                <h2>Build Profiles</h2>
+                <p>Open <strong>File ▸ Build Profiles</strong> (in older versions this was called <em>Build Settings</em>). Here you pick a platform and manage which scenes go in the build:</p>
+                <figure class="ui-figure">
+                    <svg viewBox="0 0 620 320" role="img" aria-labelledby="bpTitle bpDesc" style="max-width:620px;">
+                        <title id="bpTitle">The Build Profiles window</title>
+                        <desc id="bpDesc">A recreation of Unity's Build Profiles window: a platform list (Windows, Mac, WebGL highlighted, Android, iOS), a Scene List showing MyGame, and Switch Platform and Build buttons.</desc>
+                        <rect x="0" y="0" width="620" height="320" rx="8" fill="#383838" stroke="#161616"/>
+                        <rect x="0" y="0" width="620" height="30" rx="8" fill="#2d2d2d"/>
+                        <text x="16" y="20" font-family="'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#e6e6e6">Build Profiles</text>
+                        <!-- platform list -->
+                        <rect x="10" y="40" width="220" height="230" rx="4" fill="#333333" stroke="#1e1e1e"/>
+                        <text x="20" y="60" font-family="'Segoe UI',sans-serif" font-size="12" fill="#9a9a9a">Platforms</text>
+                        <g font-family="'Segoe UI',sans-serif" font-size="13" fill="#d2d2d2">
+                            <text x="26" y="88">🖥  Windows</text>
+                            <text x="26" y="116">🍎  macOS</text>
+                            <rect x="14" y="126" width="212" height="26" rx="4" fill="#2c5d87"/>
+                            <text x="26" y="144" fill="#fff" font-weight="700">🌐  Web (WebGL)</text>
+                            <text x="26" y="172">🤖  Android</text>
+                            <text x="26" y="200"> iOS</text>
+                        </g>
+                        <!-- scene list -->
+                        <rect x="240" y="40" width="370" height="150" rx="4" fill="#333333" stroke="#1e1e1e"/>
+                        <text x="252" y="60" font-family="'Segoe UI',sans-serif" font-size="12" fill="#9a9a9a">Scene List</text>
+                        <rect x="248" y="70" width="354" height="24" rx="3" fill="#3c3c3c"/>
+                        <rect x="254" y="76" width="12" height="12" rx="2" fill="#2a2a2a" stroke="#7f7f7f"/><path d="M256 82 l3 3 l6 -6" stroke="#5fb37f" stroke-width="2" fill="none"/>
+                        <text x="274" y="87" font-family="'Segoe UI',sans-serif" font-size="12" fill="#dcdcdc">Scenes/MyGame</text>
+                        <text x="560" y="87" font-family="'Segoe UI',sans-serif" font-size="12" fill="#9a9a9a">0</text>
+                        <text x="252" y="120" font-family="'Segoe UI',sans-serif" font-size="11" fill="#8a8a8a">Add Open Scenes ▸ includes the current scene</text>
+                        <!-- buttons -->
+                        <rect x="300" y="230" width="140" height="34" rx="5" fill="#4a4a4a" stroke="#1e1e1e"/>
+                        <text x="370" y="252" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="12" fill="#e6e6e6">Switch Platform</text>
+                        <rect x="452" y="230" width="150" height="34" rx="5" fill="#3b82f6"/>
+                        <text x="527" y="252" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#fff">Build</text>
+                    </svg>
+                    <figcaption>Figure 1: Build Profiles (recreated), with WebGL selected. Add your scene to the Scene List, then Build.</figcaption>
+                </figure>
+                <div class="card card-warning">
+                    <h4>⚠️ Add your scene first</h4>
+                    <p>If the Scene List is empty, click <strong>Add Open Scenes</strong> — otherwise Unity builds an empty game. Your gameplay scene must be in the list (and usually first).</p>
+                </div>
+            </section>
+
+            <section id="desktop" class="lesson-section">
+                <h2>A Desktop Build (Windows/Mac)</h2>
+                <ol>
+                    <li>Select <strong>Windows</strong> (or macOS) in the platform list; <strong>Switch Platform</strong> if it isn't active.</li>
+                    <li>Click <strong>Build</strong>, choose an <em>empty</em> folder, and wait.</li>
+                    <li>Unity produces an <code>.exe</code> (plus a data folder) on Windows, or an <code>.app</code> on Mac. Double-click to play!</li>
+                </ol>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>Always build into a fresh, empty folder (e.g. <code>Builds/Windows</code>). Builds contain many files; keeping each in its own folder avoids a mess.</p>
+                </div>
+            </section>
+
+            <section id="webgl" class="lesson-section">
+                <h2>A WebGL Build (Browser)</h2>
+                <ol>
+                    <li>Select <strong>Web (WebGL)</strong> and <strong>Switch Platform</strong> (this can take a while the first time).</li>
+                    <li>Click <strong>Build</strong> and choose an empty folder. WebGL builds take longer — be patient.</li>
+                    <li>Unity outputs an <code>index.html</code> and a <code>Build</code> folder — a small website that <em>is</em> your game.</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Don't just double-click index.html</h4>
+                    <p>Opening the WebGL <code>index.html</code> directly from your file system usually shows errors — browsers block it for security. You must <strong>serve</strong> it over HTTP. Easiest options: use <strong>Build And Run</strong> (Unity serves it for you), or upload the folder to a host like <a href="https://itch.io/" target="_blank" rel="noopener">itch.io</a> or Netlify.</p>
+                </div>
+                <blockquote><strong>💡 Sharing online:</strong> <a href="https://itch.io/" target="_blank" rel="noopener">itch.io</a> is the friendliest place to publish a WebGL game for free — zip the build folder, upload, and you have a shareable link in minutes.</blockquote>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Ship it</h3>
+                    <ol>
+                        <li>Open <strong>Build Profiles</strong> and <strong>Add Open Scenes</strong> so your game scene is listed.</li>
+                        <li>Make a <strong>Windows/Mac</strong> build into an empty folder and run the resulting app.</li>
+                        <li>Switch to <strong>WebGL</strong> and use <strong>Build And Run</strong> to play it in your browser.</li>
+                        <li>Celebrate — that's a real, standalone game you made!</li>
+                    </ol>
+                    <details>
+                        <summary>💡 WebGL build shows a blank page or errors</summary>
+                        <p>You likely opened index.html directly. Use <strong>Build And Run</strong>, or serve the folder over HTTP. Also confirm your scene was added to the Scene List.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Your build runs but is empty / black. What's the most common cause?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! No scene was added to the Scene List.">A) No scene was added to the Build's Scene List</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Colour isn't the issue.">B) The floor is the wrong colour</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The Editor version doesn't blank a build.">C) You used the wrong Unity version</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why can't you just double-click a WebGL <code>index.html</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Browsers block local files; it must be served over HTTP.">A) Browsers block local files — it must be served over HTTP</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's not a Unity licence issue.">B) You need a paid Unity licence</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The file exists; the issue is how it's opened.">C) Unity forgot to create it</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>A <strong>build</strong> packages your game to run without the Editor.</li>
+                        <li>Use <strong>File ▸ Build Profiles</strong>; <strong>Add Open Scenes</strong> so your scene is included.</li>
+                        <li>Desktop builds produce an <code>.exe</code>/<code>.app</code>; WebGL produces a small website.</li>
+                        <li>WebGL must be <strong>served over HTTP</strong> — use Build And Run or a host like itch.io.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You've built and shipped a game — a huge milestone. In the final lesson, <strong>Lesson 8.3</strong>, we look at where to take your new skills next.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You shipped a game!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_27.html" class="prev-lesson">← Previous: Organizing Your Project</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_29.html" class="next-lesson">Next: Where to Go Next →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

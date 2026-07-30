@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plan your mini-game before building: define the goal, the core loop, and a checklist of everything you've learned that it needs.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.1: Planning Your Mini-Game — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7: Mini-Game Project</a></li>
+            <li aria-current="page">Lesson 7.1: Planning Your Mini-Game</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📝 Lesson 7.1: Planning Your Mini-Game</h1>
+                <p class="lead">You have all the pieces. Before we assemble them, let's do what every real developer does first — <em>plan</em>. A few minutes designing on paper saves hours of confused building.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Define the game's goal and <strong>core loop</strong></li>
+                        <li>List exactly what the game needs (and map it to skills you have)</li>
+                        <li>Break the build into small, ordered steps</li>
+                        <li>Set a realistic scope</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 25 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#vision" class="toc-link">The Vision</a></li>
+                    <li><a href="#loop" class="toc-link">The Core Loop</a></li>
+                    <li><a href="#checklist" class="toc-link">What It Needs</a></li>
+                    <li><a href="#steps" class="toc-link">The Build Plan</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="vision" class="lesson-section">
+                <h2>The Vision</h2>
+                <p>Our mini-game — call it <strong>Star Collector</strong>: a player moves around a walled arena and collects all the stars before time runs out. Simple, satisfying, and it uses every skill from this course. Here's the target:</p>
+                <figure>
+                    <img src="images/level.png" alt="A real Unity render of the mini-game: a blue capsule player in a walled arena with six yellow star collectibles scattered around.">
+                    <figcaption>Figure 1: Star Collector (real render) — a walled arena, a player, and stars to collect. This is what we'll build across Module 7.</figcaption>
+                </figure>
+            </section>
+
+            <section id="loop" class="lesson-section">
+                <h2>The Core Loop</h2>
+                <p>The <strong>core loop</strong> is the short cycle a player repeats — the heartbeat of the game. For Star Collector:</p>
+                <div class="mermaid">
+                    graph LR
+                    A[Move toward a star] --> B[Collect it]
+                    B --> C[Score goes up + ding]
+                    C --> D{All collected?}
+                    D -->|no| A
+                    D -->|yes| E[You win! 🎉]
+                </div>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Core loop:</strong> the repeating cycle of actions and rewards at the heart of a game. Nail a fun core loop and you have a fun game, even a tiny one.</p>
+                </div>
+            </section>
+
+            <section id="checklist" class="lesson-section">
+                <h2>What It Needs (and where you learned it)</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Ingredient</th><th>From</th></tr></thead>
+                        <tbody>
+                            <tr><td>A floor and walls to contain the player</td><td>Modules 1–2 (scenes, primitives, materials)</td></tr>
+                            <tr><td>A player that moves with the keyboard</td><td>Module 4 (input &amp; movement)</td></tr>
+                            <tr><td>A camera that follows</td><td>Module 4 (camera follow)</td></tr>
+                            <tr><td>Collectible stars (trigger + prefab)</td><td>Module 5 (physics, triggers, collectible)</td></tr>
+                            <tr><td>A live score and win message</td><td>Module 6 (UI &amp; GameManager)</td></tr>
+                            <tr><td>A collect sound and music</td><td>Module 6 (audio)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <blockquote><strong>💡 Notice:</strong> you already know how to build <em>every single ingredient</em>. Module 7 is just assembly. That's the payoff of learning the fundamentals in order.</blockquote>
+            </section>
+
+            <section id="steps" class="lesson-section">
+                <h2>The Build Plan</h2>
+                <p>Break it into small, testable steps. Build and Play-test after each — never write everything then hope:</p>
+                <ol>
+                    <li><strong>Level</strong> — floor, four walls, lighting (Lesson 7.2).</li>
+                    <li><strong>Player</strong> — capsule + movement + follow camera (reuse Module 4).</li>
+                    <li><strong>Stars</strong> — the collectible prefab, scattered (reuse Module 5).</li>
+                    <li><strong>Score &amp; win</strong> — GameManager counts stars, declares a win (Lesson 7.3).</li>
+                    <li><strong>Polish</strong> — particles, post-processing, sound (Lesson 7.4).</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Scope discipline</h4>
+                    <p>Resist adding enemies, levels, power-ups <em>now</em>. Finish this small game first. A done game you can expand beats an ambitious one you abandon. You can always add more after it works end-to-end.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Write your plan</h3>
+                    <ol>
+                        <li>In a notes file, write one sentence describing your game's goal.</li>
+                        <li>Sketch or list your core loop (4–6 steps).</li>
+                        <li>List the ingredients and tick the ones you already know how to build (spoiler: all of them).</li>
+                        <li>Optional: change one thing to make it <em>yours</em> — a different theme (collect coins? gems?), arena shape, or star count.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 Feeling ambitious?</summary>
+                        <p>Great — write those ideas in a "later" list. Build the core game first; pull from your later-list once it's playable.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is a "core loop"?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The short repeating cycle of actions and rewards.">A) The short repeating cycle of actions and rewards at the heart of the game</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not a code loop.">B) A for-loop in your code</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not about graphics.">C) The camera's rotation</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why plan and scope before building?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! It keeps the project finishable and avoids wasted work.">A) To keep the project small and finishable, and know the steps in order</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Planning is about clarity, not speed of the engine.">B) It makes Unity run faster</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Planning isn't required by Unity — it's good practice.">C) Unity refuses to build without a plan file</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Define the <strong>goal</strong> and <strong>core loop</strong> before building.</li>
+                        <li>List the ingredients — you already know how to build them all.</li>
+                        <li>Break the build into small, testable steps and Play-test each.</li>
+                        <li>Keep scope tight: finish the small game first.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>Plan in hand, let's build. <strong>Lesson 7.2</strong> constructs the arena — floor, walls, and lighting.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 You have a plan!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_22.html" class="prev-lesson">← Previous: Adding Sound &amp; Music</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_24.html" class="next-lesson">Next: Building the Level →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

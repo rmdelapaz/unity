@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build the mini-game arena: a floor, four boundary walls, lighting, the player, follow camera, and scattered collectible prefabs.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.2: Building the Level — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7: Mini-Game Project</a></li>
+            <li aria-current="page">Lesson 7.2: Building the Level</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🏗️ Lesson 7.2: Building the Level</h1>
+                <p class="lead">Let's construct the arena. This lesson is pure assembly — floor, walls, lighting, player, camera, and stars. Everything here is a skill you already have; now we combine them into a real level.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Build a floor and four boundary walls</li>
+                        <li>Place the player and attach movement + follow camera</li>
+                        <li>Scatter collectible prefabs around the arena</li>
+                        <li>Organize the Hierarchy so the scene stays tidy</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A complete, walkable arena full of collectibles.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#target" class="toc-link">The Target</a></li>
+                    <li><a href="#floor" class="toc-link">Floor &amp; Walls</a></li>
+                    <li><a href="#player" class="toc-link">Player &amp; Camera</a></li>
+                    <li><a href="#stars" class="toc-link">Scattering Stars</a></li>
+                    <li><a href="#tidy" class="toc-link">Keeping It Tidy</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="target" class="lesson-section">
+                <h2>The Target</h2>
+                <p>By the end of this lesson your scene will look like this — a bright walled arena with the player and stars ready to collect:</p>
+                <figure>
+                    <img src="images/level.png" alt="A real Unity render of the finished arena: a walled floor with a blue player capsule and six yellow star collectibles.">
+                    <figcaption>Figure 1: The assembled arena (real render). Walls keep the player in; stars await collection.</figcaption>
+                </figure>
+            </section>
+
+            <section id="floor" class="lesson-section">
+                <h2>Floor &amp; Walls</h2>
+                <ol>
+                    <li><strong>Floor:</strong> add a Plane, scale it to about <code>(1.2, 1, 1.2)</code>. Give it a light material.</li>
+                    <li><strong>Walls:</strong> add a Cube, scale it long and thin — e.g. <code>(12, 1, 0.4)</code> — and position it at one edge (Position Z ≈ 6, Y = 0.5). This is one wall.</li>
+                    <li><strong>Duplicate</strong> the wall (<kbd>Ctrl+D</kbd>) three times; position one at each edge, rotating the two side walls 90°. A grey material suits them.</li>
+                    <li><strong>Lighting:</strong> the scene's Directional Light already lights everything. Rotate it a little for pleasing shadows if you like.</li>
+                </ol>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: duplicate, don't rebuild</h4>
+                    <p><kbd>Ctrl+D</kbd> duplicates the selected object with all its components and settings. Build one wall perfectly, then duplicate — far faster and more consistent than making four from scratch.</p>
+                </div>
+            </section>
+
+            <section id="player" class="lesson-section">
+                <h2>Player &amp; Camera</h2>
+                <ol>
+                    <li>Add a Capsule, position it at the centre (Y = 1), rename it <code>Player</code>, colour it, and tag it <strong>Player</strong>.</li>
+                    <li>Give it a <strong>Rigidbody</strong> (needed for star triggers). Under Constraints, freeze rotation X and Z so it can't tip over.</li>
+                    <li>Attach your <code>PlayerMovement</code> script (Module 4).</li>
+                    <li>Attach <code>CameraFollow</code> to the Main Camera and drag the Player into its Target slot (Module 4).</li>
+                </ol>
+                <blockquote><strong>💡 Reuse, don't rewrite.</strong> The movement and camera scripts from Module 4 work here unchanged. Reusing your own code is exactly how real projects grow.</blockquote>
+            </section>
+
+            <section id="stars" class="lesson-section">
+                <h2>Scattering Stars</h2>
+                <ol>
+                    <li>Bring in your <strong>Collectible</strong> prefab (Module 5).</li>
+                    <li>Drag it into the arena <strong>6</strong> times, spreading the copies around the floor.</li>
+                    <li>Keep them inside the walls and off the very centre (where the player starts).</li>
+                </ol>
+                <div class="card card-warning">
+                    <h4>⚠️ Stars falling through / not collecting</h4>
+                    <p>Confirm each is a prefab instance with <em>Is Trigger</em> ON and the <code>Collectible</code> script, and that the Player has a Rigidbody and the "Player" tag. This is the same checklist from Module 5.</p>
+                </div>
+            </section>
+
+            <section id="tidy" class="lesson-section">
+                <h2>Keeping It Tidy</h2>
+                <p>Scenes get cluttered fast. Group related objects under empty parent GameObjects so the Hierarchy stays readable:</p>
+                <div class="mermaid">
+                    graph TD
+                    S[Scene] --> E1[--- Environment ---<br/>Floor, Walls]
+                    S --> E2[--- Gameplay ---<br/>Player, Collectibles]
+                    S --> E3[--- Systems ---<br/>GameManager, Music]
+                    S --> E4[Main Camera, Directional Light]
+                </div>
+                <p>Create an empty GameObject (<em>GameObject ▸ Create Empty</em>), name it <code>--- Environment ---</code>, and drag the floor and walls under it. Future-you will thank present-you.</p>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Build the arena</h3>
+                    <ol>
+                        <li>Build the floor and four walls (duplicate the first wall).</li>
+                        <li>Add the tagged Player with Rigidbody, movement, and follow camera.</li>
+                        <li>Scatter 6 collectible prefabs.</li>
+                        <li>Press Play — drive around and collect every star. Walls should stop you; stars should vanish and score.</li>
+                        <li>Organize the Hierarchy into Environment / Gameplay / Systems groups.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 The player slips through the walls</summary>
+                        <p>Walls need colliders (Cubes have Box Colliders by default — don't tick Is Trigger on walls). If moving by Transform, the player can still push through at high speed; keep speed reasonable, or move the player with physics.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What's the fastest way to make four matching walls?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Build one, then duplicate with Ctrl+D.">A) Build one wall, then duplicate it with Ctrl+D</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Rebuilding each is slow and error-prone.">B) Create each from scratch</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Scaling one wall won't make four.">C) Scale a single wall to cover everything</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why group objects under empty parents in the Hierarchy?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Organization keeps a growing scene readable.">A) To keep a growing scene organized and readable</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't change performance meaningfully.">B) It makes the game run twice as fast</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Grouping is organizational, not required.">C) Unity requires it to build</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Build the floor and duplicate one wall into four (<kbd>Ctrl+D</kbd>).</li>
+                        <li>Add a tagged Player with Rigidbody + movement + follow camera (reused from Module 4).</li>
+                        <li>Scatter your Collectible prefab around the arena.</li>
+                        <li>Group objects under empty parents to keep the Hierarchy tidy.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>You can collect stars, but the game never ends. <strong>Lesson 7.3</strong> adds win and lose conditions — a real finish line.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 The arena is alive!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_23.html" class="prev-lesson">← Previous: Planning Your Mini-Game</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_25.html" class="next-lesson">Next: Win &amp; Lose Conditions →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

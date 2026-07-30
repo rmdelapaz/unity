@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add on-screen UI with a Canvas. Learn Screen Space Overlay, TextMeshPro text, buttons, and anchoring for a heads-up display.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.1: Building a UI Canvas — Unity Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' } });
+    </script>
+    <style>
+        .game-shot { position: relative; max-width: 820px; margin: var(--spacing-lg) auto; }
+        .game-shot img { display:block; width:100%; border-radius: 8px; }
+        .hud { position:absolute; color:#fff; font-family:'Segoe UI',system-ui,sans-serif; text-shadow:0 2px 6px rgba(0,0,0,.6); font-weight:700; }
+        .hud-score { top:4%; left:3%; font-size: clamp(1rem, 3.2vw, 1.8rem); }
+        .hud-timer { top:4%; right:3%; font-size: clamp(1rem, 3.2vw, 1.8rem); }
+        .hud-btn { bottom:6%; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; padding:.5em 1.4em; border-radius:8px; font-size: clamp(.8rem,2.6vw,1.2rem); box-shadow:0 3px 10px rgba(0,0,0,.4); }
+        figcaption.shot-cap { text-align:center; margin-top:.6rem; font-size:.9rem; color:var(--text-light); }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress"><div class="progress-bar"></div></div>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🎮 Unity Fundamentals</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a><a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6: UI &amp; Feedback</a></li>
+            <li aria-current="page">Lesson 6.1: Building a UI Canvas</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🖼️ Lesson 6.1: Building a UI Canvas</h1>
+                <p class="lead">Games talk to players through on-screen text and buttons — a score, a timer, a "Play Again" button. In Unity, all of that lives on a <strong>Canvas</strong>. Let's build a heads-up display.</p>
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <ul>
+                        <li>Create a <strong>Canvas</strong> and understand Screen Space – Overlay</li>
+                        <li>Add <strong>TextMeshPro</strong> text and a <strong>Button</strong></li>
+                        <li>Use <strong>anchors</strong> so UI stays put on any screen size</li>
+                        <li>Recognize the auto-created EventSystem</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 35 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary aria-label="Toggle table of contents">
+                    <span class="toc-icon" aria-hidden="true">📑</span><span class="toc-label">In This Lesson</span><span class="toc-chevron" aria-hidden="true">▾</span>
+                </summary>
+                <nav aria-label="Table of Contents"><ol>
+                    <li><a href="#hud" class="toc-link">What We're Building</a></li>
+                    <li><a href="#canvas" class="toc-link">The Canvas</a></li>
+                    <li><a href="#elements" class="toc-link">Adding Text &amp; Buttons</a></li>
+                    <li><a href="#anchors" class="toc-link">Anchors</a></li>
+                    <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                    <li><a href="#summary" class="toc-link">Summary</a></li>
+                </ol></nav>
+            </details>
+
+            <section id="hud" class="lesson-section">
+                <h2>What We're Building</h2>
+                <p>A <strong>HUD</strong> (heads-up display) sits <em>on top</em> of the game view. Here's our game with a score in one corner, a timer in the other, and a button — exactly what a Canvas lets you add:</p>
+                <figure class="game-shot">
+                    <img src="images/player.png" alt="A real Unity render of the game with an overlaid heads-up display.">
+                    <span class="hud hud-score">⭐ Score: 3</span>
+                    <span class="hud hud-timer">⏱ 0:42</span>
+                    <span class="hud hud-btn">Play Again</span>
+                    <figcaption class="shot-cap">Figure 1: A HUD over a real render. The 3D scene is a genuine Unity render; the score, timer, and button are Canvas UI drawn on top.</figcaption>
+                </figure>
+            </section>
+
+            <section id="canvas" class="lesson-section">
+                <h2>The Canvas</h2>
+                <p>All UI must live inside a <strong>Canvas</strong>. When you add your first UI element, Unity creates a Canvas automatically (plus an <strong>EventSystem</strong> that handles clicks).</p>
+                <ul>
+                    <li>Add one directly with <strong>GameObject ▸ UI ▸ Canvas</strong>.</li>
+                    <li>Its default <strong>Render Mode</strong> is <em>Screen Space – Overlay</em> — the UI is painted flat over the screen, always on top, no matter where the camera looks. Perfect for a HUD.</li>
+                </ul>
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>Canvas:</strong> the root container for all UI in a scene. <strong>EventSystem:</strong> a companion object Unity adds automatically that routes clicks and input to your UI (buttons won't work without it).</p>
+                </div>
+                <blockquote><strong>💡 UI looks huge in the Scene view.</strong> That's normal — the Canvas is drawn at screen scale, which is enormous next to your 3D objects. Judge it in the <strong>Game</strong> view, not the Scene view.</blockquote>
+            </section>
+
+            <section id="elements" class="lesson-section">
+                <h2>Adding Text &amp; Buttons</h2>
+                <p>Add UI from <strong>GameObject ▸ UI</strong>:</p>
+                <ul>
+                    <li><strong>Text – TextMeshPro</strong> — crisp text for a score or label. (The first time, Unity asks to import "TMP Essentials" — click Import.)</li>
+                    <li><strong>Button – TextMeshPro</strong> — a clickable button with a text label.</li>
+                </ul>
+                <p>Select the text and, in the Inspector's <strong>TextMeshPro - Text (UI)</strong> component, type your message and set the font size and colour. We'll change the text from code next lesson.</p>
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: TextMeshPro</h4>
+                    <p>Always use <strong>TextMeshPro</strong> (TMP) rather than the old "Text" component — it stays sharp at any size and is the modern standard. When scripting it, you'll use <code>TMP_Text</code> or <code>TextMeshProUGUI</code>.</p>
+                </div>
+            </section>
+
+            <section id="anchors" class="lesson-section">
+                <h2>Anchors: Staying Put on Any Screen</h2>
+                <p>Players have all kinds of screen sizes. <strong>Anchors</strong> pin a UI element to a part of the screen so it stays there when the window resizes. A score anchored to the top-left <em>stays</em> top-left on a phone or an ultrawide monitor.</p>
+                <ul>
+                    <li>Select a UI element; in the Inspector click the <strong>Anchor Presets</strong> box (top-left of the Rect Transform).</li>
+                    <li>Pick a preset — e.g. top-left for a score, top-right for a timer, bottom-centre for a button. (Hold Shift+Alt while clicking to also set position.)</li>
+                </ul>
+                <div class="card card-warning">
+                    <h4>⚠️ UI drifts off-screen when I resize</h4>
+                    <p>That means it's anchored to the centre but positioned far away. Re-anchor it to the corner it belongs in, so its position is measured from that corner.</p>
+                </div>
+            </section>
+
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Your first HUD</h3>
+                    <ol>
+                        <li>Add <strong>UI ▸ Text - TextMeshPro</strong> (import TMP Essentials if asked). A Canvas appears automatically.</li>
+                        <li>Set its text to <code>Score: 0</code>, make it big, and anchor it to the <strong>top-left</strong>.</li>
+                        <li>Add a <strong>Button - TextMeshPro</strong>, label it "Play Again", and anchor it to the <strong>bottom-centre</strong>.</li>
+                        <li>Switch to the <strong>Game</strong> view and confirm the HUD looks right. Resize the Game view — the HUD stays anchored.</li>
+                    </ol>
+                    <details>
+                        <summary>💡 My text is invisible / off-screen</summary>
+                        <p>Look in the <strong>Game</strong> view, not Scene view. If still missing, check its anchor/position and that its colour isn't the same as the background.</p>
+                    </details>
+                </div>
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Where must all UI elements live?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Inside a Canvas.">A) Inside a Canvas</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The camera renders, but UI parents to a Canvas.">B) Inside the Main Camera</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Not the floor.">C) On the floor object</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What do anchors do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! They pin UI to a screen region so it stays put on any size.">A) Pin a UI element to part of the screen so it stays put at any resolution</button>
+                            <button class="quiz-option" data-correct="false" data-hint="They don't add physics.">B) Give the UI gravity</button>
+                            <button class="quiz-option" data-correct="false" data-hint="They position, not recolour.">C) Change the UI colour</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>All UI lives on a <strong>Canvas</strong>; an <strong>EventSystem</strong> is added automatically for clicks.</li>
+                        <li><strong>Screen Space – Overlay</strong> draws the HUD flat over the screen.</li>
+                        <li>Use <strong>TextMeshPro</strong> for text and buttons — crisp at any size.</li>
+                        <li><strong>Anchors</strong> keep UI in place across screen sizes; judge UI in the Game view.</li>
+                    </ul>
+                </div>
+                <h3>🚀 What's Next?</h3>
+                <p>A static "Score: 0" isn't much use. <strong>Lesson 6.2</strong> makes it <em>count</em> — updating live as the player collects.</p>
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Your game has a face now!</h3>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_19.html" class="prev-lesson">← Previous: Building a Collectible</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_21.html" class="next-lesson">Next: A Live Score Counter →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>
