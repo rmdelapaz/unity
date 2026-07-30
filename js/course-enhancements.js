@@ -282,8 +282,6 @@ function initLessonProgress() {
     progress[page] = { visited: true, lastVisited: new Date().toISOString(), scrollPosition: 0 };
     localStorage.setItem('lessonProgress', JSON.stringify(progress));
 
-    if (page === 'index') updateProgressIndicators(progress);
-
     // Save scroll on leave
     window.addEventListener('beforeunload', () => {
         progress[page].scrollPosition = window.scrollY;
@@ -293,32 +291,6 @@ function initLessonProgress() {
     // Restore scroll
     const saved = progress[page]?.scrollPosition;
     if (saved > 0) setTimeout(() => window.scrollTo(0, saved), 100);
-}
-
-function updateProgressIndicators(progress) {
-    const links = document.querySelectorAll('.lesson-link');
-    let done = 0;
-    links.forEach(link => {
-        const name = link.getAttribute('href')?.replace('.html', '');
-        if (progress[name]?.visited) {
-            link.classList.add('visited');
-            done++;
-            if (!link.querySelector('.checkmark')) {
-                const cm = document.createElement('span');
-                cm.className = 'checkmark';
-                cm.textContent = ' ✓';
-                link.appendChild(cm);
-            }
-        }
-    });
-    const total = links.length;
-    const pct = total ? Math.round((done / total) * 100) : 0;
-    const el = document.getElementById('overall-progress');
-    if (el) {
-        el.innerHTML = `<h3>Your Progress</h3>
-            <div class="progress-bar-container"><div class="progress-bar" style="width:${pct}%"></div></div>
-            <p>${done} of ${total} lessons completed (${pct}%)</p>`;
-    }
 }
 
 /* ===========================
@@ -427,4 +399,4 @@ function throttle(fn, ms) {
 }
 
 // Expose for other scripts
-window.courseEnhancements = { debounce, throttle, applyTheme, reinitMermaid, updateProgressIndicators };
+window.courseEnhancements = { debounce, throttle, applyTheme, reinitMermaid };
