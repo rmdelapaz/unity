@@ -87,7 +87,7 @@ function reinitMermaid(theme) {
    =========================== */
 
 function initProgressIndicator() {
-    const bar = document.querySelector('.progress-bar');
+    const bar = document.querySelector('.progress-indicator .progress-bar');
     if (!bar) return;
 
     const update = () => {
